@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "946241726764",
+    "project_id": "eau-de-vie-63d2a",
+    "storage_bucket": "eau-de-vie-63d2a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:946241726764:android:4ffc2a1ebb0ced6569a489",
+        "android_client_info": {
+          "package_name": "org.eaudevie"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "946241726764-iujd36kij3j9ii3lft0stsu0e4ab96s2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.eaudevie",
+            "certificate_hash": "90ec35b289be5e904efee114ca04168f06c47af1"
+          }
+        },
+        {
+          "client_id": "946241726764-p2d7pbhqrncbr9nho9cg478u8akh5b43.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCTEoiJOFp-Zv1jKvKY4ubcMAikg1mMbp0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "946241726764-p2d7pbhqrncbr9nho9cg478u8akh5b43.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
