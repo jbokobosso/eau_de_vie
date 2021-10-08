@@ -28,10 +28,11 @@ class CustomTheme {
           textTheme: ButtonTextTheme.primary
       ),
       textTheme: const TextTheme(
-          headline1: TextStyle(fontSize: 30.0, color: Colors.white, fontWeight: FontWeight.bold),
-          subtitle1: TextStyle(fontSize: 20.0, color: Color.fromRGBO(29, 53, 61, 1)),
+          headline1: TextStyle(fontSize: 25.0, color: Colors.white, fontWeight: FontWeight.bold),
+          headline2: TextStyle(fontSize: 12.0, color: Colors.white, fontWeight: FontWeight.bold),
+          subtitle2: TextStyle(fontSize: 10.0, color: Color.fromRGBO(29, 53, 61, 1), fontWeight: FontWeight.bold),
           bodyText1: TextStyle(fontSize: 25.0, color: Color.fromRGBO(100, 113, 150, 1)),
-          bodyText2: TextStyle(fontSize: 15.0, color: Color.fromRGBO(100, 113, 150, 1))
+          bodyText2: TextStyle(fontSize: 12.0, color: Color.fromRGBO(100, 113, 150, 1))
       ),
       fontFamily: 'Montserrat',
     );
