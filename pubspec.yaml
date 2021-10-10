@@ -29,6 +29,7 @@ environment:
 dependencies:
 
   # UI Facilities
+  lottie: ^1.2.1
   blur: ^3.0.0
   fluttertoast: ^8.0.8
 
@@ -77,6 +78,7 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/lottie/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

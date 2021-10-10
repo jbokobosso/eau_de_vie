@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       title: CoreConstants.appName,
       theme: CustomTheme.lightTheme,
       routes: routes,
-      initialRoute: RouteNames.home,
+      initialRoute: RouteNames.studio_menu,
     );
   }
 }

@@ -10,4 +10,7 @@ class FileAssets {
   static String forward = "assets/icons/forward.png";
   static String play = "assets/icons/play.png";
   static String accelerate = "assets/icons/accelerate.png";
+  static String pause_black = "assets/icons/pause_black.png";
+  static String play_black = "assets/icons/play_black.png";
+  static String sound_wave = "assets/lottie/sound_wave.json";
 }

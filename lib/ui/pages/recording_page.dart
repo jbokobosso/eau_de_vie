@@ -1,0 +1,113 @@
+import 'dart:ui';
+
+import 'package:eau_de_vie/constants/file_assets.dart';
+import 'package:eau_de_vie/models/recording_state.dart';
+import 'package:lottie/lottie.dart';
+import 'package:flutter/material.dart';
+
+class Recording extends StatelessWidget {
+  Recording({Key? key}) : super(key: key);
+  ERecordingState recordingStete = ERecordingState.init;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(title: const Text('Eau De Vie'), centerTitle: true),
+        body: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+                image: AssetImage(FileAssets.background),
+                fit: BoxFit.cover
+            ),
+          ),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Text('Dimanches', style: Theme.of(context).textTheme.headline1),
+                Container(
+                  padding: EdgeInsets.all(20.0),
+                  width: MediaQuery.of(context).size.width*0.7,
+                  height: MediaQuery.of(context).size.width*0.7,
+                  decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Color.fromRGBO(33, 38, 63, 1)
+                  ),
+                  child: Column(
+                    children: [
+                      Icon(Icons.mic_rounded, color: Color.fromRGBO(107, 121, 176, 1), size: MediaQuery.of(context).size.width*0.25),
+                      Text('--:--', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).size.width*0.15)),
+                      Text('Cliquez sur Démarrer', style: TextStyle(color: Color.fromRGBO(100, 113, 150, 1), fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).size.width*0.04))
+                    ],
+                  ),
+                ),
+                recordingStete == ERecordingState.init ? ElevatedButton(
+                  onPressed: () => print("Hello"),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                    fixedSize: MaterialStateProperty.all<Size>(Size(MediaQuery.of(context).size.width*0.5, MediaQuery.of(context).size.height*0.1)),
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.0)))
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.play_arrow, color: Color.fromRGBO(253, 120, 150, 1), size: MediaQuery.of(context).size.width*0.12,),
+                      Text('Démarrer', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Color.fromRGBO(100, 113, 150, 1)))
+                    ],
+                  ),
+                ) : Container(),
+                recordingStete == ERecordingState.paused ? ElevatedButton(
+                  onPressed: () => print("Hello"),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                    fixedSize: MaterialStateProperty.all<Size>(Size(MediaQuery.of(context).size.width*0.5, MediaQuery.of(context).size.height*0.1)),
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.0)))
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.pause, color: Color.fromRGBO(253, 120, 150, 1), size: MediaQuery.of(context).size.width*0.12,),
+                      Text('Pause', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Color.fromRGBO(100, 113, 150, 1)))
+                    ],
+                  ),
+                ) : Container(),
+                recordingStete != ERecordingState.init ? ElevatedButton(
+                  onPressed: () => print("Hello"),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(Color.fromRGBO(253, 120, 150, 1)),
+                    fixedSize: MaterialStateProperty.all<Size>(Size(MediaQuery.of(context).size.width*0.5, MediaQuery.of(context).size.height*0.1)),
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.0)))
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.stop, color: Colors.white, size: MediaQuery.of(context).size.width*0.12,),
+                      Text('Arrêter', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Colors.white))
+                    ],
+                  ),
+                ) : Container(),
+                Container(
+                  padding: EdgeInsets.all(10.0),
+                  decoration: BoxDecoration(
+                    color: Color.fromRGBO(31, 31, 31, 1),
+                    borderRadius: BorderRadius.circular(50.0),
+                  ),
+                  width: MediaQuery.of(context).size.width*0.8,
+                  height: MediaQuery.of(context).size.height*0.1,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      IconButton(icon: Icon(Icons.play_arrow, color: Colors.white), onPressed: () { print('Pressed'); }),
+                      IconButton(icon: Image.asset(FileAssets.accelerate), onPressed: () { print('Pressed'); }),
+                      Expanded(
+                        child: Lottie.asset(FileAssets.sound_wave),
+                      ),
+                      Text('02:55', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).size.width*0.05))
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        )
+    );
+  }
+}

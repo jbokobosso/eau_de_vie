@@ -1,0 +1,4 @@
+enum ERecordingType {
+  sunday,
+  wednesday
+}
