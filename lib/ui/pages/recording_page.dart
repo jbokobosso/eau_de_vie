@@ -2,12 +2,14 @@ import 'dart:ui';
 
 import 'package:eau_de_vie/constants/file_assets.dart';
 import 'package:eau_de_vie/models/recording_state.dart';
+import 'package:eau_de_vie/states/app_provider.dart';
+import 'package:eau_de_vie/utils/utils.dart';
 import 'package:lottie/lottie.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Recording extends StatelessWidget {
   Recording({Key? key}) : super(key: key);
-  ERecordingState recordingStete = ERecordingState.init;
 
   @override
   Widget build(BuildContext context) {
@@ -41,48 +43,56 @@ class Recording extends StatelessWidget {
                     ],
                   ),
                 ),
-                recordingStete == ERecordingState.init ? ElevatedButton(
-                  onPressed: () => print("Hello"),
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                    fixedSize: MaterialStateProperty.all<Size>(Size(MediaQuery.of(context).size.width*0.5, MediaQuery.of(context).size.height*0.1)),
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.0)))
-                  ),
-                  child: Row(
+                Consumer<AppProvider>(
+                  builder: (context, appProvider, child) => Column(
                     children: [
-                      Icon(Icons.play_arrow, color: Color.fromRGBO(253, 120, 150, 1), size: MediaQuery.of(context).size.width*0.12,),
-                      Text('Démarrer', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Color.fromRGBO(100, 113, 150, 1)))
+                      appProvider.recordingState != ERecordingState.init ? ElevatedButton(
+                        onPressed: () {
+                          Provider.of<AppProvider>(context, listen: false).recordVoice();
+                        },
+                        style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                            fixedSize: MaterialStateProperty.all<Size>(Size(MediaQuery.of(context).size.width*0.5, MediaQuery.of(context).size.height*0.1)),
+                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.0)))
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.play_arrow, color: Color.fromRGBO(253, 120, 150, 1), size: MediaQuery.of(context).size.width*0.12,),
+                            Text('Démarrer', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Color.fromRGBO(100, 113, 150, 1)))
+                          ],
+                        ),
+                      ) : Container(),
+                      appProvider.recordingState == ERecordingState.paused ? ElevatedButton(
+                        onPressed: () => print("Hello"),
+                        style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                            fixedSize: MaterialStateProperty.all<Size>(Size(MediaQuery.of(context).size.width*0.5, MediaQuery.of(context).size.height*0.1)),
+                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.0)))
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.pause, color: Color.fromRGBO(253, 120, 150, 1), size: MediaQuery.of(context).size.width*0.12,),
+                            Text('Pause', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Color.fromRGBO(100, 113, 150, 1)))
+                          ],
+                        ),
+                      ) : Container(),
+                      appProvider.recordingState == ERecordingState.init ? ElevatedButton(
+                        onPressed: () => appProvider.stopRecording(),
+                        style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(Color.fromRGBO(253, 120, 150, 1)),
+                            fixedSize: MaterialStateProperty.all<Size>(Size(MediaQuery.of(context).size.width*0.5, MediaQuery.of(context).size.height*0.1)),
+                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.0)))
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.stop, color: Colors.white, size: MediaQuery.of(context).size.width*0.12,),
+                            Text('Arrêter', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Colors.white))
+                          ],
+                        ),
+                      ) : Container(),
                     ],
                   ),
-                ) : Container(),
-                recordingStete == ERecordingState.paused ? ElevatedButton(
-                  onPressed: () => print("Hello"),
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                    fixedSize: MaterialStateProperty.all<Size>(Size(MediaQuery.of(context).size.width*0.5, MediaQuery.of(context).size.height*0.1)),
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.0)))
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.pause, color: Color.fromRGBO(253, 120, 150, 1), size: MediaQuery.of(context).size.width*0.12,),
-                      Text('Pause', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Color.fromRGBO(100, 113, 150, 1)))
-                    ],
-                  ),
-                ) : Container(),
-                recordingStete != ERecordingState.init ? ElevatedButton(
-                  onPressed: () => print("Hello"),
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(Color.fromRGBO(253, 120, 150, 1)),
-                    fixedSize: MaterialStateProperty.all<Size>(Size(MediaQuery.of(context).size.width*0.5, MediaQuery.of(context).size.height*0.1)),
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.0)))
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.stop, color: Colors.white, size: MediaQuery.of(context).size.width*0.12,),
-                      Text('Arrêter', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Colors.white))
-                    ],
-                  ),
-                ) : Container(),
+                ),
                 Container(
                   padding: EdgeInsets.all(10.0),
                   decoration: BoxDecoration(

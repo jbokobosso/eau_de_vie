@@ -28,6 +28,10 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
 
+  # Recording
+  record: ^3.0.2
+  path_provider: ^2.0.8
+
   # UI Facilities
   lottie: ^1.2.1
   blur: ^3.0.0
