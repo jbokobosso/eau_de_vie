@@ -42,6 +42,11 @@ class AppProvider extends ChangeNotifier {
     getRecordedInfo();
   }
 
+  getPlayerState() {
+    Utils.showToast(_player.processingState.toString());
+    Utils.showToast(_player.playing.toString());
+  }
+
   Future<String?> getRecordedInfo() async {
     Duration? duration = await _player.setFilePath(_recordedPath);
     String? soundTime = duration?.inSeconds.toString();
@@ -51,28 +56,43 @@ class AppProvider extends ChangeNotifier {
   }
 
   void play() {
-    _player.setFilePath(_recordedPath);
-    _player.play();
-    notifyListeners();
-    Utils.showToast(_player.playerState.toString());
+    if(_player.processingState == ProcessingState.idle && !_player.playing){
+      _player.setFilePath(_recordedPath);
+      _player.play();
+      notifyListeners();
+    } else if(_player.processingState == ProcessingState.ready && !_player.playing){
+      resume();
+      notifyListeners();
+    } else if(_player.processingState == ProcessingState.completed) {
+      _player.setFilePath(_recordedPath);
+      _player.play();
+      notifyListeners();
+    }
+    listen();
+  }
+
+  listen() {
+    _player.playbackEventStream.listen((event) {
+      if(event.processingState == ProcessingState.completed) {
+        stop();
+        notifyListeners();
+      }
+    });
   }
 
   void pause() {
     _player.pause();
     notifyListeners();
-    Utils.showToast(_player.playerState.toString());
   }
 
   void resume() {
     _player.play();
     notifyListeners();
-    Utils.showToast(_player.playerState.toString());
   }
 
-  void stop() async {
+  void stop() {
     _player.stop();
     notifyListeners();
-    Utils.showToast(_player.playerState.toString());
   }
 
 }

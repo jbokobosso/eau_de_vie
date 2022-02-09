@@ -90,10 +90,9 @@ class Recording extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            IconButton(icon: const Icon(Icons.play_arrow, color: Colors.white), onPressed: () { appProvider.play(); }),
-                            IconButton(icon: const Icon(Icons.pause, color: Colors.white), onPressed: () { appProvider.pause(); }),
-                            IconButton(icon: const Icon(Icons.play_circle_fill, color: Colors.white), onPressed: () { appProvider.resume(); }),
-                            IconButton(icon: const Icon(Icons.stop, color: Colors.white), onPressed: () { appProvider.stop(); }),
+                            appProvider.player.playing
+                                ? IconButton(icon: const Icon(Icons.pause, color: Colors.white), onPressed: () { appProvider.pause(); })
+                                : IconButton(icon: const Icon(Icons.play_arrow, color: Colors.white), onPressed: () { appProvider.play(); }),
                             IconButton(icon: Image.asset(FileAssets.accelerate), onPressed: () { print('Pressed'); }),
                             appProvider.player.playing ? Expanded(
                               child: Lottie.asset(FileAssets.sound_wave),
