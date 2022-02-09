@@ -31,6 +31,7 @@ dependencies:
   # Recording
   record: ^3.0.2
   path_provider: ^2.0.8
+  just_audio: ^0.9.19
 
   # UI Facilities
   lottie: ^1.2.1

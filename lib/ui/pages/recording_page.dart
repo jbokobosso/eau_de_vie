@@ -4,6 +4,7 @@ import 'package:eau_de_vie/constants/file_assets.dart';
 import 'package:eau_de_vie/models/recording_state.dart';
 import 'package:eau_de_vie/states/app_provider.dart';
 import 'package:eau_de_vie/utils/utils.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:lottie/lottie.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -46,7 +47,7 @@ class Recording extends StatelessWidget {
                 Consumer<AppProvider>(
                   builder: (context, appProvider, child) => Column(
                     children: [
-                      appProvider.recordingState != ERecordingState.init ? ElevatedButton(
+                      appProvider.recordingState == ERecordingState.init ? ElevatedButton(
                         onPressed: () {
                           Provider.of<AppProvider>(context, listen: false).recordVoice();
                         },
@@ -62,21 +63,7 @@ class Recording extends StatelessWidget {
                           ],
                         ),
                       ) : Container(),
-                      appProvider.recordingState == ERecordingState.paused ? ElevatedButton(
-                        onPressed: () => print("Hello"),
-                        style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                            fixedSize: MaterialStateProperty.all<Size>(Size(MediaQuery.of(context).size.width*0.5, MediaQuery.of(context).size.height*0.1)),
-                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.0)))
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(Icons.pause, color: Color.fromRGBO(253, 120, 150, 1), size: MediaQuery.of(context).size.width*0.12,),
-                            Text('Pause', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Color.fromRGBO(100, 113, 150, 1)))
-                          ],
-                        ),
-                      ) : Container(),
-                      appProvider.recordingState == ERecordingState.init ? ElevatedButton(
+                      appProvider.recordingState == ERecordingState.recording ? ElevatedButton(
                         onPressed: () => appProvider.stopRecording(),
                         style: ButtonStyle(
                             backgroundColor: MaterialStateProperty.all<Color>(Color.fromRGBO(253, 120, 150, 1)),
@@ -90,27 +77,31 @@ class Recording extends StatelessWidget {
                           ],
                         ),
                       ) : Container(),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.all(10.0),
-                  decoration: BoxDecoration(
-                    color: Color.fromRGBO(31, 31, 31, 1),
-                    borderRadius: BorderRadius.circular(50.0),
-                  ),
-                  width: MediaQuery.of(context).size.width*0.8,
-                  height: MediaQuery.of(context).size.height*0.1,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      IconButton(icon: Icon(Icons.play_arrow, color: Colors.white), onPressed: () { print('Pressed'); }),
-                      IconButton(icon: Image.asset(FileAssets.accelerate), onPressed: () { print('Pressed'); }),
-                      Expanded(
-                        child: Lottie.asset(FileAssets.sound_wave),
-                      ),
-                      Text('02:55', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).size.width*0.05))
+                      const SizedBox(height: 20.0),
+                      appProvider.recordedPath != "" && appProvider.recordingState != ERecordingState.recording ? Container(
+                        padding: EdgeInsets.all(10.0),
+                        decoration: BoxDecoration(
+                          color: Color.fromRGBO(31, 31, 31, 1),
+                          borderRadius: BorderRadius.circular(50.0),
+                        ),
+                        width: MediaQuery.of(context).size.width*0.8,
+                        height: MediaQuery.of(context).size.height*0.1,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            IconButton(icon: const Icon(Icons.play_arrow, color: Colors.white), onPressed: () { appProvider.play(); }),
+                            IconButton(icon: const Icon(Icons.pause, color: Colors.white), onPressed: () { appProvider.pause(); }),
+                            IconButton(icon: const Icon(Icons.play_circle_fill, color: Colors.white), onPressed: () { appProvider.resume(); }),
+                            IconButton(icon: const Icon(Icons.stop, color: Colors.white), onPressed: () { appProvider.stop(); }),
+                            IconButton(icon: Image.asset(FileAssets.accelerate), onPressed: () { print('Pressed'); }),
+                            appProvider.player.playing ? Expanded(
+                              child: Lottie.asset(FileAssets.sound_wave),
+                            ) : Container(),
+                            Text(appProvider.soundDuration, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).size.width*0.05))
+                          ],
+                        ),
+                      ) : Container(),
                     ],
                   ),
                 ),
