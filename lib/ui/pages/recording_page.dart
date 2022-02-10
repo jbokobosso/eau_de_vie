@@ -105,7 +105,23 @@ class Recording extends StatelessWidget {
                                 value: (appProvider.playbackPosition.inSeconds / appProvider.soundDuration.inSeconds),
                                 onChanged: (newValue) => appProvider.setPlaybackPosition(newValue)),
                             ),
-                            IconButton(icon: Image.asset(FileAssets.accelerate), onPressed: () { print('Pressed'); })
+                            IconButton(
+                              onPressed: appProvider.accelerate,
+                              icon: Container(
+                                padding: const EdgeInsets.all(3.0),
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.all(Radius.circular(50.0))
+                                ),
+                                child: Text(
+                                  "${appProvider.player.speed == 1.5 ? 1.5 : appProvider.player.speed.ceil()}x",
+                                  style: TextStyle(
+                                      color: const Color.fromRGBO(31, 31, 31, 1),
+                                      fontSize: MediaQuery.of(context).size.width*0.04
+                                  )
+                                ),
+                              )
+                            )
                           ],
                         ),
                       ) : Container(),

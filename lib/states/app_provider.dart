@@ -125,4 +125,15 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void accelerate() {
+    if(_player.speed == 1.0) {
+      _player.setSpeed(1.5);
+    } else if(_player.speed == 1.5) {
+      _player.setSpeed(2.0);
+    } else {
+      _player.setSpeed(1.0);
+    }
+    notifyListeners();
+  }
+
 }
