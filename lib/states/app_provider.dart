@@ -9,15 +9,40 @@ import 'package:record/record.dart';
 
 class AppProvider extends ChangeNotifier {
 
+  Duration get playbackPosition => _playbackPosition;
+  double get recPlayPosition => _recPlayPosition;
   AudioPlayer get player => _player;
   String get recordedPath => _recordedPath;
   String get soundDuration => _soundDuration;
+  Duration get soundDurationAsDuration => _soundDurationAsDuration;
   ERecordingState get recordingState => _recordingState;
   ERecordingState _recordingState = ERecordingState.init;
   final Record _record = Record();
   late String _recordedPath = "";
   late String _soundDuration = "";
+  late Duration _soundDurationAsDuration = const Duration(minutes: 0, seconds: 0);
   final _player = AudioPlayer();
+  late double _recPlayPosition = 0;
+  late Duration _playbackPosition = const Duration(minutes: 0, seconds: 0);
+
+  void setRecPlayPosition(double newPosition) {
+    _recPlayPosition = newPosition;
+    notifyListeners();
+    print(_recPlayPosition);
+  }
+
+  String formatDurationToString(Duration duration) {
+    int durationInSeconds = duration.inSeconds;
+    if(durationInSeconds <= 60) {
+      var seconds = durationInSeconds < 10 ? '0$durationInSeconds' : durationInSeconds;
+      return "00:$seconds";
+    } else {
+      var minutesTemp = (durationInSeconds/60).floor();
+      var minutes = minutesTemp < 10 ? '0$minutesTemp' : minutesTemp;
+      var seconds = durationInSeconds%60;
+      return "$minutes:$seconds";
+    }
+  }
 
   void recordVoice() async {
     bool result = await _record.hasPermission();
@@ -51,6 +76,7 @@ class AppProvider extends ChangeNotifier {
     Duration? duration = await _player.setFilePath(_recordedPath);
     String? soundTime = duration?.inSeconds.toString();
     _soundDuration = soundTime!;
+    _soundDurationAsDuration = duration!;
     notifyListeners();
     return soundTime;
   }
@@ -68,15 +94,22 @@ class AppProvider extends ChangeNotifier {
       _player.play();
       notifyListeners();
     }
-    listen();
+    listenPlaybackEvents();
+    listenPlaybackPosition();
   }
 
-  listen() {
+  listenPlaybackEvents() {
     _player.playbackEventStream.listen((event) {
       if(event.processingState == ProcessingState.completed) {
         stop();
         notifyListeners();
       }
+    });
+  }
+  listenPlaybackPosition() {
+    _player.positionStream.listen((Duration positionEvent) {
+      _playbackPosition = positionEvent;
+      notifyListeners();
     });
   }
 

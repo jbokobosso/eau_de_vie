@@ -84,7 +84,7 @@ class Recording extends StatelessWidget {
                           color: Color.fromRGBO(31, 31, 31, 1),
                           borderRadius: BorderRadius.circular(50.0),
                         ),
-                        width: MediaQuery.of(context).size.width*0.8,
+                        width: MediaQuery.of(context).size.width*0.9,
                         height: MediaQuery.of(context).size.height*0.1,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -93,11 +93,17 @@ class Recording extends StatelessWidget {
                             appProvider.player.playing
                                 ? IconButton(icon: const Icon(Icons.pause, color: Colors.white), onPressed: () { appProvider.pause(); })
                                 : IconButton(icon: const Icon(Icons.play_arrow, color: Colors.white), onPressed: () { appProvider.play(); }),
-                            IconButton(icon: Image.asset(FileAssets.accelerate), onPressed: () { print('Pressed'); }),
-                            appProvider.player.playing ? Expanded(
-                              child: Lottie.asset(FileAssets.sound_wave),
-                            ) : Container(),
-                            Text(appProvider.soundDuration, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).size.width*0.05))
+                            appProvider.player.playing
+                                ? Text(appProvider.formatDurationToString(appProvider.playbackPosition), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).size.width*0.03))
+                                : Text(appProvider.formatDurationToString(appProvider.soundDurationAsDuration), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).size.width*0.03)),
+                            Expanded(
+                              child: Slider(
+                                inactiveColor: Colors.white,
+                                activeColor: Colors.blue,
+                                value: appProvider.recPlayPosition,
+                                onChanged: (newValue) => appProvider.setRecPlayPosition(newValue)),
+                            ),
+                            IconButton(icon: Image.asset(FileAssets.accelerate), onPressed: () { print('Pressed'); })
                           ],
                         ),
                       ) : Container(),
