@@ -10,25 +10,22 @@ import 'package:record/record.dart';
 class AppProvider extends ChangeNotifier {
 
   Duration get playbackPosition => _playbackPosition;
-  double get recPlayPosition => _recPlayPosition;
+  Duration get soundDuration => _soundDuration;
   AudioPlayer get player => _player;
   String get recordedPath => _recordedPath;
-  String get soundDuration => _soundDuration;
-  Duration get soundDurationAsDuration => _soundDurationAsDuration;
   ERecordingState get recordingState => _recordingState;
   ERecordingState _recordingState = ERecordingState.init;
   final Record _record = Record();
   late String _recordedPath = "";
-  late String _soundDuration = "";
-  late Duration _soundDurationAsDuration = const Duration(minutes: 0, seconds: 0);
   final _player = AudioPlayer();
-  late double _recPlayPosition = 0;
+  late Duration _soundDuration = const Duration(minutes: 0, seconds: 0);
   late Duration _playbackPosition = const Duration(minutes: 0, seconds: 0);
 
-  void setRecPlayPosition(double newPosition) {
-    _recPlayPosition = newPosition;
+  void setPlaybackPosition(double newSliderValue) {
+    var newPlaybackPositionInSeconds = (newSliderValue * _soundDuration.inSeconds).ceil();
+    var newPlaybackPositionInDuration = Duration(seconds: newPlaybackPositionInSeconds);
+    _player.seek(newPlaybackPositionInDuration);
     notifyListeners();
-    print(_recPlayPosition);
   }
 
   String formatDurationToString(Duration duration) {
@@ -75,8 +72,7 @@ class AppProvider extends ChangeNotifier {
   Future<String?> getRecordedInfo() async {
     Duration? duration = await _player.setFilePath(_recordedPath);
     String? soundTime = duration?.inSeconds.toString();
-    _soundDuration = soundTime!;
-    _soundDurationAsDuration = duration!;
+    _soundDuration = duration!;
     notifyListeners();
     return soundTime;
   }
@@ -106,6 +102,7 @@ class AppProvider extends ChangeNotifier {
       }
     });
   }
+
   listenPlaybackPosition() {
     _player.positionStream.listen((Duration positionEvent) {
       _playbackPosition = positionEvent;

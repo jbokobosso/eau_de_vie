@@ -95,13 +95,15 @@ class Recording extends StatelessWidget {
                                 : IconButton(icon: const Icon(Icons.play_arrow, color: Colors.white), onPressed: () { appProvider.play(); }),
                             appProvider.player.playing
                                 ? Text(appProvider.formatDurationToString(appProvider.playbackPosition), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).size.width*0.03))
-                                : Text(appProvider.formatDurationToString(appProvider.soundDurationAsDuration), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).size.width*0.03)),
+                                : Text(appProvider.formatDurationToString(appProvider.soundDuration), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).size.width*0.03)),
                             Expanded(
                               child: Slider(
+                                min: 0,
+                                max: 1,
                                 inactiveColor: Colors.white,
                                 activeColor: Colors.blue,
-                                value: appProvider.recPlayPosition,
-                                onChanged: (newValue) => appProvider.setRecPlayPosition(newValue)),
+                                value: (appProvider.playbackPosition.inSeconds / appProvider.soundDuration.inSeconds),
+                                onChanged: (newValue) => appProvider.setPlaybackPosition(newValue)),
                             ),
                             IconButton(icon: Image.asset(FileAssets.accelerate), onPressed: () { print('Pressed'); })
                           ],
