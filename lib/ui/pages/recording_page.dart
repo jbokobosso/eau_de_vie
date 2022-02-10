@@ -8,6 +8,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:lottie/lottie.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:record/record.dart';
 
 class Recording extends StatelessWidget {
   Recording({Key? key}) : super(key: key);
@@ -36,18 +37,24 @@ class Recording extends StatelessWidget {
                       shape: BoxShape.circle,
                       color: Color.fromRGBO(33, 38, 63, 1)
                   ),
-                  child: Column(
-                    children: [
-                      Icon(Icons.mic_rounded, color: Color.fromRGBO(107, 121, 176, 1), size: MediaQuery.of(context).size.width*0.25),
-                      Text('--:--', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).size.width*0.15)),
-                      Text('Cliquez sur Démarrer', style: TextStyle(color: Color.fromRGBO(100, 113, 150, 1), fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).size.width*0.04))
-                    ],
+                  child: Consumer<AppProvider>(
+                    builder: (context, appProvider, child) => Column(
+                      children: [
+                        Icon(Icons.mic_rounded, color: Color.fromRGBO(107, 121, 176, 1), size: MediaQuery.of(context).size.width*0.25),
+                        appProvider.recordingState == ERecordingState.recording
+                            ? Text(appProvider.formatDurationToString(appProvider.recordDuration), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).size.width*0.15))
+                            : Text("--:--", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).size.width*0.15)),
+                        appProvider.recordingState == ERecordingState.init || appProvider.recordingState == ERecordingState.stoped
+                            ? Text('Cliquez sur Démarrer', style: TextStyle(color: Color.fromRGBO(100, 113, 150, 1), fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).size.width*0.04))
+                            : Container()
+                      ],
+                    )
                   ),
                 ),
                 Consumer<AppProvider>(
                   builder: (context, appProvider, child) => Column(
                     children: [
-                      appProvider.recordingState == ERecordingState.init ? ElevatedButton(
+                      appProvider.recordingState == ERecordingState.init || appProvider.recordingState == ERecordingState.stoped ? ElevatedButton(
                         onPressed: () {
                           Provider.of<AppProvider>(context, listen: false).recordVoice();
                         },

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:eau_de_vie/models/recording_state.dart';
@@ -9,12 +10,15 @@ import 'package:record/record.dart';
 
 class AppProvider extends ChangeNotifier {
 
+  Duration get recordDuration => _recordDuration;
+  Duration _recordDuration = const Duration(minutes: 0, seconds: 0);
   Duration get playbackPosition => _playbackPosition;
   Duration get soundDuration => _soundDuration;
   AudioPlayer get player => _player;
   String get recordedPath => _recordedPath;
   ERecordingState get recordingState => _recordingState;
   ERecordingState _recordingState = ERecordingState.init;
+  Record get record => _record;
   final Record _record = Record();
   late String _recordedPath = "";
   final _player = AudioPlayer();
@@ -41,6 +45,17 @@ class AppProvider extends ChangeNotifier {
     }
   }
 
+  void timerForRecording() {
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      _recordDuration = Duration(seconds: _recordDuration.inSeconds+1);
+      if(_recordingState == ERecordingState.stoped || _recordingState == ERecordingState.init) {
+        timer.cancel();
+        _recordDuration = const Duration(minutes: 0, seconds: 0);
+      }
+      notifyListeners();
+    });
+  }
+
   void recordVoice() async {
     bool result = await _record.hasPermission();
     Directory appDocDir = await getApplicationDocumentsDirectory();
@@ -50,6 +65,7 @@ class AppProvider extends ChangeNotifier {
       bitRate: 128000, // by default
       samplingRate: 44100, // by default
     );
+    timerForRecording();
     _recordingState = ERecordingState.recording;
     notifyListeners();
     _recordedPath = '${appDocDir.path}/sound.m4a';
@@ -58,7 +74,7 @@ class AppProvider extends ChangeNotifier {
 
   void stopRecording() async {
     _record.stop();
-    _recordingState = ERecordingState.init;
+    _recordingState = ERecordingState.stoped;
     notifyListeners();
     Utils.showToast(recordingState.toString());
     getRecordedInfo();
