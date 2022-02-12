@@ -25,10 +25,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      color: const Color.fromRGBO(98, 0, 238, 1),
       title: CoreConstants.appName,
       theme: CustomTheme.lightTheme,
       routes: routes,
-      initialRoute: RouteNames.studio_menu,
+      initialRoute: RouteNames.home,
     );
   }
 }
