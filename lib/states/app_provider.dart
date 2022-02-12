@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:eau_de_vie/constants/core_constants.dart';
 import 'package:eau_de_vie/models/recording_state.dart';
 import 'package:eau_de_vie/utils/utils.dart';
 import 'package:flutter/foundation.dart';
@@ -22,7 +23,7 @@ class AppProvider extends ChangeNotifier {
   final Record _record = Record();
   late String _recordedPath = "";
   final _player = AudioPlayer();
-  late Duration _soundDuration = const Duration(minutes: 0, seconds: 0);
+  late Duration _soundDuration = const Duration(seconds: 117); // initializing with arbitrary duration for first render before initState is fired
   late Duration _playbackPosition = const Duration(minutes: 0, seconds: 0);
 
   void setPlaybackPosition(double newSliderValue) {
@@ -56,6 +57,24 @@ class AppProvider extends ChangeNotifier {
     });
   }
 
+  void deleteRecordedFile() {
+    File recordedFile = File(_recordedPath);
+    recordedFile.deleteSync();
+    notifyListeners();
+  }
+
+  Future<void> loadLastRecordIfExists() async {
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    String lastRecordedPath = '${appDocDir.path}/sound.m4a';
+    if(File(lastRecordedPath).existsSync()) {
+      _recordedPath = '${appDocDir.path}/sound.m4a';
+      getRecordedFileDuration();
+      notifyListeners();
+    } else {
+      Utils.showToast("Aucun enregistrement trouvé !");
+    }
+  }
+
   void recordVoice() async {
     bool result = await _record.hasPermission();
     Directory appDocDir = await getApplicationDocumentsDirectory();
@@ -77,7 +96,7 @@ class AppProvider extends ChangeNotifier {
     _recordingState = ERecordingState.stoped;
     notifyListeners();
     Utils.showToast(recordingState.toString());
-    getRecordedInfo();
+    getRecordedFileDuration();
   }
 
   getPlayerState() {
@@ -85,7 +104,7 @@ class AppProvider extends ChangeNotifier {
     Utils.showToast(_player.playing.toString());
   }
 
-  Future<String?> getRecordedInfo() async {
+  Future<String?> getRecordedFileDuration() async {
     Duration? duration = await _player.setFilePath(_recordedPath);
     String? soundTime = duration?.inSeconds.toString();
     _soundDuration = duration!;
