@@ -6,7 +6,7 @@ class CustomTheme {
     return ThemeData(
       colorScheme: const ColorScheme(
         background: Colors.white,
-        primary: Color.fromRGBO(98, 0, 238, 1),
+        primary: Color.fromRGBO(0, 146, 202, 1),
         primaryVariant: Color.fromRGBO(86, 0, 209, 1),
         secondary: Color.fromRGBO(61, 194, 255, 1),
         secondaryVariant: Color.fromRGBO(54, 171, 224, 1),
@@ -34,7 +34,7 @@ class CustomTheme {
           bodyText1: TextStyle(fontSize: 25.0, color: Color.fromRGBO(100, 113, 150, 1)),
           bodyText2: TextStyle(fontSize: 12.0, color: Color.fromRGBO(100, 113, 150, 1))
       ),
-      fontFamily: 'Montserrat',
+      fontFamily: 'DAYROM',
     );
   }
 

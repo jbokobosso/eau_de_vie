@@ -13,4 +13,5 @@ class FileAssets {
   static String pause_black = "assets/icons/pause_black.png";
   static String play_black = "assets/icons/play_black.png";
   static String sound_wave = "assets/lottie/sound_wave.json";
+  static String record_icon = "assets/images/microphone.png";
 }

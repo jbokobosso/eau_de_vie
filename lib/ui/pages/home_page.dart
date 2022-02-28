@@ -11,7 +11,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Eau De Vie'), centerTitle: true),
+      appBar: AppBar(title: const Text('Eau De Vie', style: TextStyle(fontFamily: 'DAYROM'),), centerTitle: true),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -31,7 +31,7 @@ class HomePage extends StatelessWidget {
                   onPressed: () => Navigator.of(context).pushNamed(RouteNames.wednesday),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.mic, color: Colors.indigoAccent),
+                  icon: Image.asset(FileAssets.record_icon),
                   iconSize: MediaQuery.of(context).size.height*iconScale,
                   onPressed: () => Navigator.of(context).pushNamed(RouteNames.studio_menu),
                 ),
