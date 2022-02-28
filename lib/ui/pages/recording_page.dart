@@ -75,7 +75,15 @@ class _RecordingState extends State<Recording> {
                   child: Consumer<AppProvider>(
                       builder: (context, appProvider, child) => Column(
                         children: [
-                          Icon(Icons.mic_rounded, color: micColor, size: MediaQuery.of(context).size.width*0.25),
+                          File(appProvider.recordedPath).existsSync() && appProvider.recordingState != ERecordingState.recording
+                              ? IconButton(onPressed: appProvider.sendFileOnCloud, icon: Icon(Icons.send, color: Colors.green, size: MediaQuery.of(context).size.width*0.13))
+                              : Icon(Icons.mic_rounded, color: micColor, size: MediaQuery.of(context).size.width*0.25),
+                          appProvider.isUploading
+                              ? Column(children: [
+                                  const CircularProgressIndicator(),
+                                  Text(appProvider.uploadPercentage.toStringAsFixed(0)+"%", style: const TextStyle(fontSize: 20.0),)
+                                ])
+                              : Container(),
                           appProvider.recordingState == ERecordingState.recording
                               ? Text(appProvider.formatDurationToString(appProvider.recordDuration), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).size.width*0.15))
                               : Text("--:--", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).size.width*0.15)),
@@ -102,29 +110,30 @@ class _RecordingState extends State<Recording> {
                         child: Row(
                           children: [
                             Icon(Icons.play_arrow, color: Color.fromRGBO(253, 120, 150, 1), size: MediaQuery.of(context).size.width*0.12,),
-                            Text('Démarrer', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Color.fromRGBO(100, 113, 150, 1)))
+                            const Text('Démarrer', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Color.fromRGBO(100, 113, 150, 1)))
                           ],
                         ),
                       ) : Container(),
                       appProvider.recordingState == ERecordingState.recording ? ElevatedButton(
                         onPressed: () => appProvider.stopRecording(),
                         style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(Color.fromRGBO(253, 120, 150, 1)),
+                            backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(253, 120, 150, 1)),
                             fixedSize: MaterialStateProperty.all<Size>(Size(MediaQuery.of(context).size.width*0.5, MediaQuery.of(context).size.height*0.1)),
                             shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.0)))
                         ),
                         child: Row(
                           children: [
                             Icon(Icons.stop, color: Colors.white, size: MediaQuery.of(context).size.width*0.12,),
-                            Text('Arrêter', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Colors.white))
+                            const Text('Arrêter', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Colors.white))
                           ],
                         ),
                       ) : Container(),
                       const SizedBox(height: 20.0),
-                      File(appProvider.recordedPath).existsSync() && appProvider.recordingState != ERecordingState.recording ? Container(
-                        padding: EdgeInsets.all(10.0),
+                      File(appProvider.recordedPath).existsSync() && appProvider.recordingState != ERecordingState.recording
+                          ? Container(
+                        padding: const EdgeInsets.all(10.0),
                         decoration: BoxDecoration(
-                          color: Color.fromRGBO(31, 31, 31, 1),
+                          color: const Color.fromRGBO(31, 31, 31, 1),
                           borderRadius: BorderRadius.circular(50.0),
                         ),
                         width: MediaQuery.of(context).size.width*0.9,
@@ -167,7 +176,8 @@ class _RecordingState extends State<Recording> {
                             )
                           ],
                         ),
-                      ) : Container(),
+                      )
+                          : Container(),
                     ],
                   ),
                 ),

@@ -1,16 +1,20 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eau_de_vie/constants/core_constants.dart';
 import 'package:eau_de_vie/models/recording_state.dart';
 import 'package:eau_de_vie/utils/utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:nanoid/async.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class AppProvider extends ChangeNotifier {
 
+  firebase_storage.FirebaseStorage storage = firebase_storage.FirebaseStorage.instance;
   Duration get recordDuration => _recordDuration;
   Duration _recordDuration = const Duration(minutes: 0, seconds: 0);
   Duration get playbackPosition => _playbackPosition;
@@ -25,6 +29,10 @@ class AppProvider extends ChangeNotifier {
   final _player = AudioPlayer();
   late Duration _soundDuration = const Duration(seconds: 117); // initializing with arbitrary duration for first render before initState is fired
   late Duration _playbackPosition = const Duration(minutes: 0, seconds: 0);
+  double get uploadPercentage => _uploadPercentage;
+  double _uploadPercentage = 0.0;
+  bool get isUploading => _isUploading;
+  bool _isUploading = false;
 
   void setPlaybackPosition(double newSliderValue) {
     var newPlaybackPositionInSeconds = (newSliderValue * _soundDuration.inSeconds).ceil();
@@ -65,9 +73,9 @@ class AppProvider extends ChangeNotifier {
 
   Future<void> loadLastRecordIfExists() async {
     Directory appDocDir = await getApplicationDocumentsDirectory();
-    String lastRecordedPath = '${appDocDir.path}/sound.m4a';
+    String lastRecordedPath = '${appDocDir.path}/sound.${CoreConstants.recording_files_extension}';
     if(File(lastRecordedPath).existsSync()) {
-      _recordedPath = '${appDocDir.path}/sound.m4a';
+      _recordedPath = '${appDocDir.path}/sound.${CoreConstants.recording_files_extension}';
       getRecordedFileDuration();
       notifyListeners();
     } else {
@@ -79,7 +87,7 @@ class AppProvider extends ChangeNotifier {
     bool result = await _record.hasPermission();
     Directory appDocDir = await getApplicationDocumentsDirectory();
     await _record.start(
-      path: '${appDocDir.path}/sound.m4a', // required
+      path: '${appDocDir.path}/sound.${CoreConstants.recording_files_extension}', // required
       encoder: AudioEncoder.AAC, // by default
       bitRate: 128000, // by default
       samplingRate: 44100, // by default
@@ -87,7 +95,7 @@ class AppProvider extends ChangeNotifier {
     timerForRecording();
     _recordingState = ERecordingState.recording;
     notifyListeners();
-    _recordedPath = '${appDocDir.path}/sound.m4a';
+    _recordedPath = '${appDocDir.path}/sound.${CoreConstants.recording_files_extension}';
     Utils.showToast(recordingState.toString());
   }
 
@@ -169,6 +177,29 @@ class AppProvider extends ChangeNotifier {
       _player.setSpeed(1.0);
     }
     notifyListeners();
+  }
+
+  Future<void> sendFileOnCloud() async {
+    _isUploading = true;
+    notifyListeners();
+    File recordedFile = File(_recordedPath);
+
+    try {
+      var id = await customAlphabet('23456789abcdef', CoreConstants.recording_files_name_id_length);
+      firebase_storage.FirebaseStorage.instance
+          .ref('recordings/$id.${CoreConstants.recording_files_extension}')
+          .putFile(recordedFile)
+          .snapshotEvents.listen((event) {
+            _uploadPercentage = (event.bytesTransferred * 100) / event.totalBytes;
+            if(_uploadPercentage == 100.0) {
+              _isUploading = false;
+              deleteRecordedFile();
+              notifyListeners();
+            }
+          });
+    } on FirebaseException catch (e) {
+      rethrow;
+    }
   }
 
 }

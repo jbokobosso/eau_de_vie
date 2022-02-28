@@ -1,6 +1,6 @@
 class FileAssets {
   static String logo = "assets/images/logo.png";
-  static String menuBanner = "assets/images/menuBanner.png";
+  static String menuBanner = "assets/images/menuBanner.PNG";
   static String studioBanner = "assets/images/studioBanner.png";
   static String listenBanner = "assets/images/listenBanner.png";
   static String sunday = "assets/images/sunday.png";
