@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eau_de_vie/constants/core_constants.dart';
+import 'package:eau_de_vie/models/recording_model.dart';
 import 'package:eau_de_vie/models/recording_state.dart';
 import 'package:eau_de_vie/utils/utils.dart';
 import 'package:flutter/foundation.dart';
@@ -11,10 +12,12 @@ import 'package:nanoid/async.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AppProvider extends ChangeNotifier {
 
   firebase_storage.FirebaseStorage storage = firebase_storage.FirebaseStorage.instance;
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
   Duration get recordDuration => _recordDuration;
   Duration _recordDuration = const Duration(minutes: 0, seconds: 0);
   Duration get playbackPosition => _playbackPosition;
@@ -67,7 +70,9 @@ class AppProvider extends ChangeNotifier {
 
   void deleteRecordedFile() {
     File recordedFile = File(_recordedPath);
-    recordedFile.deleteSync();
+    if(recordedFile.existsSync()) {
+      recordedFile.deleteSync();
+    }
     notifyListeners();
   }
 
@@ -179,24 +184,36 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<dynamic> addRecordingToFirebase(RecordingModel recordingModel) async {
+    CollectionReference recordings = FirebaseFirestore.instance.collection('recordings');
+    return await recordings.doc(recordingModel.id).set(recordingModel.toMap());
+  }
+
   Future<void> sendFileOnCloud() async {
     _isUploading = true;
     notifyListeners();
     File recordedFile = File(_recordedPath);
 
     try {
-      var id = await customAlphabet('23456789abcdef', CoreConstants.recording_files_name_id_length);
+      String id = await customAlphabet('23456789abcdef', CoreConstants.recording_files_name_id_length);
+
       firebase_storage.FirebaseStorage.instance
-          .ref('recordings/$id.${CoreConstants.recording_files_extension}')
+          .ref('${CoreConstants.FCN_recordings}/$id.${CoreConstants.recording_files_extension}')
           .putFile(recordedFile)
-          .snapshotEvents.listen((event) {
-            _uploadPercentage = (event.bytesTransferred * 100) / event.totalBytes;
-            if(_uploadPercentage == 100.0) {
-              _isUploading = false;
-              deleteRecordedFile();
-              notifyListeners();
-            }
-          });
+          .snapshotEvents.listen((event) async {
+        _uploadPercentage = (event.bytesTransferred * 100) / event.totalBytes;
+        if(event.totalBytes == event.bytesTransferred) { // for some reason i do not guess yet, this is executing two times. So the second condition is to ensure it do not
+          RecordingModel recordingModel = RecordingModel(
+              soundFile: "$id.${CoreConstants.recording_files_extension}",
+              timestamp: Timestamp.fromDate(DateTime.now()),
+              id: id
+          );
+          await addRecordingToFirebase(recordingModel);
+          _isUploading = false;
+          deleteRecordedFile();
+          notifyListeners();
+        }
+      });
     } on FirebaseException catch (e) {
       rethrow;
     }
