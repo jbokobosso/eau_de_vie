@@ -15,7 +15,7 @@ class RecordingModel{
     };
   }
 
-  RecordingModel fromMap(RecordingModel recordingModel, String id) {
+  static RecordingModel fromMap(RecordingModel recordingModel, String id) {
     return RecordingModel(id: id, soundFile: recordingModel.soundFile, timestamp: recordingModel.timestamp);
   }
 }

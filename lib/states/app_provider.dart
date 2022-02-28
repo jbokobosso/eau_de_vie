@@ -7,6 +7,7 @@ import 'package:eau_de_vie/models/recording_model.dart';
 import 'package:eau_de_vie/models/recording_state.dart';
 import 'package:eau_de_vie/utils/utils.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:nanoid/async.dart';
 import 'package:path_provider/path_provider.dart';
@@ -217,6 +218,16 @@ class AppProvider extends ChangeNotifier {
     } on FirebaseException catch (e) {
       rethrow;
     }
+  }
+
+  Future<List<RecordingModel>> getRecordings() async {
+    List<RecordingModel> recordingsList = [];
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection(CoreConstants.FCN_recordings).get();
+    querySnapshot.docs.forEach((doc) {
+      RecordingModel recordingModel = RecordingModel(id: doc['id'], soundFile: doc['soundFile'], timestamp: doc['timestamp']);
+      recordingsList.add(recordingModel);
+    });
+    return recordingsList;
   }
 
 }
