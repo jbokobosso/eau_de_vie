@@ -37,6 +37,12 @@ class AppProvider extends ChangeNotifier {
   double _uploadPercentage = 0.0;
   bool get isUploading => _isUploading;
   bool _isUploading = false;
+  RecordingModel get playingSound => _playingSound;
+  late RecordingModel _playingSound;
+
+  void setPlayingSound(RecordingModel recordingModel) {
+    _playingSound = recordingModel;
+  }
 
   void setPlaybackPosition(double newSliderValue) {
     var newPlaybackPositionInSeconds = (newSliderValue * _soundDuration.inSeconds).ceil();
@@ -186,7 +192,7 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<dynamic> addRecordingToFirebase(RecordingModel recordingModel) async {
-    CollectionReference recordings = FirebaseFirestore.instance.collection('recordings');
+    CollectionReference recordings = FirebaseFirestore.instance.collection(CoreConstants.FCN_recordings);
     return await recordings.doc(recordingModel.id).set(recordingModel.toMap());
   }
 
@@ -199,15 +205,17 @@ class AppProvider extends ChangeNotifier {
       String id = await customAlphabet('23456789abcdef', CoreConstants.recording_files_name_id_length);
 
       firebase_storage.FirebaseStorage.instance
-          .ref('${CoreConstants.FCN_recordings}/$id.${CoreConstants.recording_files_extension}')
+          .ref('${CoreConstants.FS_recordings}/$id.${CoreConstants.recording_files_extension}')
           .putFile(recordedFile)
           .snapshotEvents.listen((event) async {
         _uploadPercentage = (event.bytesTransferred * 100) / event.totalBytes;
         if(event.totalBytes == event.bytesTransferred) { // for some reason i do not guess yet, this is executing two times. So the second condition is to ensure it do not
+          String downloadUrl = await event.ref.getDownloadURL();
           RecordingModel recordingModel = RecordingModel(
               soundFile: "$id.${CoreConstants.recording_files_extension}",
               timestamp: Timestamp.fromDate(DateTime.now()),
-              id: id
+              id: id,
+              downloadUrl: downloadUrl
           );
           await addRecordingToFirebase(recordingModel);
           _isUploading = false;
@@ -224,7 +232,7 @@ class AppProvider extends ChangeNotifier {
     List<RecordingModel> recordingsList = [];
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection(CoreConstants.FCN_recordings).get();
     querySnapshot.docs.forEach((doc) {
-      RecordingModel recordingModel = RecordingModel(id: doc['id'], soundFile: doc['soundFile'], timestamp: doc['timestamp']);
+      RecordingModel recordingModel = RecordingModel(id: doc['id'], soundFile: doc['soundFile'], timestamp: doc['timestamp'], downloadUrl: doc['downloadUrl']);
       recordingsList.add(recordingModel);
     });
     return recordingsList;

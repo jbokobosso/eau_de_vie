@@ -61,7 +61,10 @@ class _SundayPageState extends State<SundayPage> {
                                 style: Theme.of(context).textTheme.bodyText2
                             ),
                             // trailing: Text('10:35', style: TextStyle(color: Colors.black)),
-                            onTap: () => Navigator.of(context).pushNamed(RouteNames.playing_page),
+                            onTap: () {
+                              Provider.of<AppProvider>(context, listen: false).setPlayingSound(snapshot.data![index]);
+                              Navigator.of(context).pushNamed(RouteNames.playing_page, arguments: snapshot.data![index]);
+                            },
                           ),
                         )
                     );
