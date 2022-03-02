@@ -9,6 +9,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:eau_de_vie/models/recording_model.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PlayingProvider extends ChangeNotifier {
 
@@ -78,21 +79,35 @@ class PlayingProvider extends ChangeNotifier {
     return false;
   }
 
-  downloadSound(String soundUrl, soundFileName) async {
-    if(!File(playingSoundFullPath).existsSync()) {
-      await _requestPermission(Permission.storage);
-      Utils.showToast("Téléchargement en cours...");
-      isDownloading = true; notifyListeners();
-      Directory appDocDir = await getApplicationDocumentsDirectory();
-      Dio dio = Dio();
-      dio.download(soundUrl, appDocDir.path+"/"+soundFileName);
-      playingSoundFullPath = appDocDir.path+"/"+soundFileName;
-      isDownloading = false; notifyListeners();
-    }
+  downloadSound(RecordingModel recordingModel) async {
+    // First download sound to local
+    isDownloading = true; notifyListeners();
+    Utils.showToast(Utils.formatDateToHuman(recordingModel.timestamp.toDate()));
+    await _requestPermission(Permission.storage);
+    Utils.showToast("Téléchargement en cours...");
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    Dio dio = Dio();
+    dio.download(recordingModel.downloadUrl, appDocDir.path+"/"+recordingModel.soundFile);
+    playingSoundFullPath = appDocDir.path+"/"+recordingModel.soundFile;
+    // Then update local database for the downloaded file
+
+    isDownloading = false; notifyListeners();
   }
 
   play(RecordingModel recordingModel) async {
-    await downloadSound(recordingModel.downloadUrl, recordingModel.soundFile);
+    // check if downloaded and download it
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    appDocDir.listSync().forEach((element) async {
+      if(element.path.contains(recordingModel.soundFile)) {
+        await downloadSound(recordingModel);
+      }
+    });
+    // check if is the one playing and pause player
+    if(playingSoundFullPath.contains(recordingModel.soundFile)) {
+      _player.pause();
+      notifyListeners();
+    }
+
     if(_player.processingState == ProcessingState.idle && !_player.playing){
       await _player.setFilePath(playingSoundFullPath);
       await _player.play();

@@ -3,6 +3,8 @@ import 'package:eau_de_vie/constants/file_assets.dart';
 import 'package:eau_de_vie/constants/routes.dart';
 import 'package:eau_de_vie/models/recording_model.dart';
 import 'package:eau_de_vie/states/app_provider.dart';
+import 'package:eau_de_vie/states/playing_provider.dart';
+import 'package:eau_de_vie/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -60,10 +62,19 @@ class _SundayPageState extends State<SundayPage> {
                                     "${snapshot.data![index].timestamp.toDate().year.toString()}",
                                 style: Theme.of(context).textTheme.bodyText2
                             ),
-                            // trailing: Text('10:35', style: TextStyle(color: Colors.black)),
+                            trailing: snapshot.data![index].isDownloaded
+                                ? const SizedBox(height: 0, width: 0)
+                                : IconButton(
+                                    icon: const Icon(Icons.download),
+                                    onPressed: () => Provider.of<PlayingProvider>(context, listen: false).downloadSound(snapshot.data![index])
+                                  ),
                             onTap: () {
-                              Provider.of<AppProvider>(context, listen: false).setPlayingSound(snapshot.data![index]);
-                              Navigator.of(context).pushNamed(RouteNames.playing_page, arguments: snapshot.data![index]);
+                              if(snapshot.data![index].isDownloaded) {
+                                Provider.of<AppProvider>(context, listen: false).setPlayingSound(snapshot.data![index]);
+                                Navigator.of(context).pushNamed(RouteNames.playing_page, arguments: snapshot.data![index]);
+                              } else {
+                                Utils.showToast("Veuillez télécharger d'abord");
+                              }
                             },
                           ),
                         )

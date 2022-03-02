@@ -5,8 +5,9 @@ class RecordingModel{
   String soundFile;
   Timestamp timestamp;
   String downloadUrl;
+  bool isDownloaded;
 
-  RecordingModel({required this.soundFile, required this.timestamp, required this.downloadUrl, this.id});
+  RecordingModel({required this.soundFile, required this.timestamp, required this.downloadUrl, this.id, this.isDownloaded = false});
 
   Map<String, dynamic> toMap() {
     return {

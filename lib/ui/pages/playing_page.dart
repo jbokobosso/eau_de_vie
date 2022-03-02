@@ -21,9 +21,9 @@ class _PlayingPageState extends State<PlayingPage> {
 
   @override
   void initState() {
-    // loadSoundInfos();
     super.initState();
   }
+
 
   // loadSoundInfos() async {
   //   RecordingModel playingSound = Provider.of<AppProvider>(context, listen: false).playingSound;
@@ -78,7 +78,10 @@ class _PlayingPageState extends State<PlayingPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         // Icon(Icons.headset, color: Colors.blue, size: MediaQuery.of(context).size.width*0.25),
-                        Text(playingProvider.formatDurationToString(playingProvider.playbackPositionInDuration), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).size.width*0.10))
+                        Text(
+                          playingProvider.formatDurationToString(playingProvider.playbackPositionInDuration),
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).size.width*0.10)
+                        )
                       ],
                     ),
                   ),
