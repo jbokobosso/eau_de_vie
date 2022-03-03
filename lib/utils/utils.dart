@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eau_de_vie/models/recording_model.dart';
+import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -10,7 +11,9 @@ class Utils {
     switch(datetime.weekday) {
       case 3 : recordingType = ERecordingType.wednesday; break;
       case 7 : recordingType = ERecordingType.sunday; break;
-      default: recordingType = ERecordingType.test; break;
+      default:
+        recordingType = datetime.weekday > 3 ? ERecordingType.wednesday : ERecordingType.sunday;
+      break;
     }
     return recordingType;
   }

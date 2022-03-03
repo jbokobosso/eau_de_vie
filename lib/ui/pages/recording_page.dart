@@ -4,6 +4,7 @@ import 'package:eau_de_vie/constants/core_constants.dart';
 import 'package:eau_de_vie/constants/file_assets.dart';
 import 'package:eau_de_vie/models/recording_state.dart';
 import 'package:eau_de_vie/states/app_provider.dart';
+import 'package:eau_de_vie/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -60,10 +61,10 @@ class _RecordingState extends State<Recording> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                GestureDetector(
-                  onTap: Provider.of<AppProvider>(context, listen: false).deleteRecordedFile,
-                  child: Text('Dimanches', style: Theme.of(context).textTheme.headline1),
-                ),
+                // GestureDetector(
+                //   onTap: () => Utils.getRecordingTypeFromDateTime(DateTime.now()),
+                //   child: Text('Get day type test', style: Theme.of(context).textTheme.headline1),
+                // ),
                 Container(
                   padding: const EdgeInsets.all(20.0),
                   width: MediaQuery.of(context).size.width*0.7,
