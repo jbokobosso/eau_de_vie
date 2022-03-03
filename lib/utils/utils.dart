@@ -15,17 +15,6 @@ class Utils {
     return recordingType;
   }
 
-  static ERecordingType getRecordingTypeFromTimestamp(Timestamp timestamp) {
-    var datetime = timestamp.toDate();
-    ERecordingType recordingType;
-    switch(datetime.weekday) {
-      case 3 : recordingType = ERecordingType.wednesday; break;
-      case 7 : recordingType = ERecordingType.sunday; break;
-      default: recordingType = ERecordingType.test; break;
-    }
-    return recordingType;
-  }
-
   static String formatDurationToString(Duration duration) {
     int durationInSeconds = duration.inSeconds;
     if(durationInSeconds <= 60) {

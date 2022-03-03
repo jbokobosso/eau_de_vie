@@ -260,37 +260,22 @@ class AppProvider extends ChangeNotifier {
 
   Future<List<RecordingModel>>  getRecordings(ERecordingType recordingType) async {
     List<String> downloadedSoundIds = await getLocalDownloadedSoundIds();
-    List<RecordingModel> recordingsList = [];
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection(CoreConstants.FCN_recordings)
         .where("recordingType", isEqualTo: EnumToString.convertToString(recordingType))
         .get();
-    querySnapshot.docs.forEach((doc) {
-      late RecordingModel recordingModel;
-      if(downloadedSoundIds.contains(doc['id'])) {
-        recordingModel = RecordingModel(
-          id: doc['id'],
-          soundFile: doc['soundFile'],
-          soundDurationInMilliseconds: doc['soundDurationInMilliseconds'],
-          timestamp: doc['timestamp'],
-          downloadUrl: doc['downloadUrl'],
-          recordingType: Utils.getRecordingTypeFromTimestamp(doc['timestamp']),
-          isDownloaded: true
-        );
+    List<RecordingModel> recordingsList = querySnapshot.docs.map((doc) => RecordingModel.fromMap(doc.data() as Map<String, dynamic>, doc['id'])).toList();
+    List<RecordingModel> finalList =
+    recordingsList.map((RecordingModel recordingModel) {
+      if(downloadedSoundIds.contains(recordingModel.id)) {
+        recordingModel.isDownloaded = true;
+        return recordingModel;
       } else {
-        recordingModel = RecordingModel(
-            id: doc['id'],
-            soundFile: doc['soundFile'],
-            soundDurationInMilliseconds: doc['soundDurationInMilliseconds'],
-            timestamp: doc['timestamp'],
-            downloadUrl: doc['downloadUrl'],
-            recordingType: Utils.getRecordingTypeFromTimestamp(doc['timestamp']),
-            isDownloaded: false
-        );
+        recordingModel.isDownloaded = false;
+        return recordingModel;
       }
-      recordingsList.add(recordingModel);
-    });
-    return recordingsList;
+    }).toList();
+    return finalList;
   }
 
 }
