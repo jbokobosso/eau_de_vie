@@ -4,6 +4,7 @@ import 'package:eau_de_vie/constants/routes.dart';
 import 'package:eau_de_vie/models/recording_model.dart';
 import 'package:eau_de_vie/states/app_provider.dart';
 import 'package:eau_de_vie/states/playing_provider.dart';
+import 'package:eau_de_vie/ui/widgets/no_network.dart';
 import 'package:eau_de_vie/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -38,6 +39,7 @@ class _SundayPageState extends State<SundayPage> {
             Expanded(
               child: FutureBuilder<List<RecordingModel>>(
                 future: Provider.of<AppProvider>(context, listen: false).getRecordings(), // a previously-obtained Future<String> or null
+
                 builder: (BuildContext context, AsyncSnapshot<List<RecordingModel>> snapshot) {
                   if(snapshot.hasData) {
                     return ListView.builder(
@@ -56,17 +58,19 @@ class _SundayPageState extends State<SundayPage> {
                               backgroundColor: Colors.white,
                               backgroundImage: AssetImage(FileAssets.sunday),
                             ),
-                            title: Text(
-                                "${snapshot.data![index].timestamp.toDate().day.toString()}/"
-                                    "${snapshot.data![index].timestamp.toDate().month.toString()}/"
-                                    "${snapshot.data![index].timestamp.toDate().year.toString()}",
-                                style: Theme.of(context).textTheme.bodyText2
-                            ),
+                            title: Text( Utils.formatDateToHuman(snapshot.data![index].timestamp.toDate()),style: Theme.of(context).textTheme.bodyText2),
                             trailing: snapshot.data![index].isDownloaded
                                 ? const SizedBox(height: 0, width: 0)
+                                : Provider.of<PlayingProvider>(context, listen: true).isDownloading && Provider.of<PlayingProvider>(context, listen: true).downloadingSoundId == snapshot.data![index].id
+                                ? const CircularProgressIndicator()
                                 : IconButton(
                                     icon: const Icon(Icons.download),
-                                    onPressed: () => Provider.of<PlayingProvider>(context, listen: false).downloadSound(snapshot.data![index])
+                                    onPressed: () async {
+                                      await Provider.of<PlayingProvider>(context, listen: false).downloadSound(snapshot.data![index]);
+                                      setState(() {
+
+                                      });
+                                    }
                                   ),
                             onTap: () {
                               if(snapshot.data![index].isDownloaded) {
@@ -79,6 +83,8 @@ class _SundayPageState extends State<SundayPage> {
                           ),
                         )
                     );
+                  } else if(snapshot.hasError) {
+                    return NotNetwork(() => Utils.showToast("Recharger la page"));
                   } else {
                     return const Center(child: CircularProgressIndicator());
                   }

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:eau_de_vie/constants/core_constants.dart';
@@ -28,6 +29,7 @@ class PlayingProvider extends ChangeNotifier {
   String playingSoundFullPath = "";
 
   bool isDownloading = false;
+  String downloadingSoundId = "";
 
 
 
@@ -80,17 +82,29 @@ class PlayingProvider extends ChangeNotifier {
   }
 
   downloadSound(RecordingModel recordingModel) async {
-    // First download sound to local
     isDownloading = true; notifyListeners();
+    downloadingSoundId = recordingModel.id!;
+    // First check if already downloaded
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> oldRecordedIds = prefs.getStringList(CoreConstants.S_downloaded_sounds) ?? [];
+    if(oldRecordedIds.contains(recordingModel.id)) {
+      return;
+    }
+    // Then if not yet downloaded, download sound to local
     Utils.showToast(Utils.formatDateToHuman(recordingModel.timestamp.toDate()));
     await _requestPermission(Permission.storage);
     Utils.showToast("Téléchargement en cours...");
     Directory appDocDir = await getApplicationDocumentsDirectory();
     Dio dio = Dio();
-    dio.download(recordingModel.downloadUrl, appDocDir.path+"/"+recordingModel.soundFile);
+    try {
+      var result = await dio.download(recordingModel.downloadUrl, appDocDir.path+"/"+recordingModel.soundFile);
+    } catch(e) {
+      Utils.showToast("Pas d'internet, veuillez reéssayer");
+    }
     playingSoundFullPath = appDocDir.path+"/"+recordingModel.soundFile;
-    // Then update local database for the downloaded file
-
+    // Finally update local database for the downloaded file
+    oldRecordedIds.add(recordingModel.id!);
+    prefs.setStringList(CoreConstants.S_downloaded_sounds, oldRecordedIds);
     isDownloading = false; notifyListeners();
   }
 

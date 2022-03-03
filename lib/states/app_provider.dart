@@ -14,6 +14,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AppProvider extends ChangeNotifier {
 
@@ -228,11 +229,35 @@ class AppProvider extends ChangeNotifier {
     }
   }
 
+  Future<List<String>> getLocalDownloadedSoundIds() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> oldRecordedIds = prefs.getStringList(CoreConstants.S_downloaded_sounds) ?? [];
+    return oldRecordedIds;
+  }
+
   Future<List<RecordingModel>> getRecordings() async {
+    List<String> downloadedSoundIds = await getLocalDownloadedSoundIds();
     List<RecordingModel> recordingsList = [];
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection(CoreConstants.FCN_recordings).get();
     querySnapshot.docs.forEach((doc) {
-      RecordingModel recordingModel = RecordingModel(id: doc['id'], soundFile: doc['soundFile'], timestamp: doc['timestamp'], downloadUrl: doc['downloadUrl']);
+      late RecordingModel recordingModel;
+      if(downloadedSoundIds.contains(doc['id'])) {
+        recordingModel = RecordingModel(
+            id: doc['id'],
+            soundFile: doc['soundFile'],
+            timestamp: doc['timestamp'],
+            downloadUrl: doc['downloadUrl'],
+            isDownloaded: true
+        );
+      } else {
+        recordingModel = RecordingModel(
+            id: doc['id'],
+            soundFile: doc['soundFile'],
+            timestamp: doc['timestamp'],
+            downloadUrl: doc['downloadUrl'],
+            isDownloaded: false
+        );
+      }
       recordingsList.add(recordingModel);
     });
     return recordingsList;
