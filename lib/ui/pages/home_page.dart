@@ -1,9 +1,7 @@
-import 'package:eau_de_vie/constants/custom_theme.dart';
 import 'package:eau_de_vie/constants/file_assets.dart';
 import 'package:eau_de_vie/constants/routes.dart';
 import 'package:eau_de_vie/ui/widgets/playing_banner.dart';
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 
 class HomePage extends StatelessWidget {
   final double iconScale = 0.15;
@@ -36,7 +34,7 @@ class HomePage extends StatelessWidget {
                     IconButton(
                       icon: Image.asset(FileAssets.record_icon),
                       iconSize: MediaQuery.of(context).size.height*iconScale,
-                      onPressed: () => Navigator.of(context).pushNamed(RouteNames.studio_menu),
+                      onPressed: () => Navigator.of(context).pushNamed(RouteNames.recording),
                     ),
                   ],
                 ),

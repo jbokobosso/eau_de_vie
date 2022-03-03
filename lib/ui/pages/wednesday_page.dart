@@ -32,7 +32,7 @@ class _WednesdayPageState extends State<WednesdayPage> {
             ),
             Expanded(
               child: FutureBuilder<List<RecordingModel>>(
-                future: Provider.of<AppProvider>(context, listen: false).getRecordings(), // a previously-obtained Future<String> or null
+                future: Provider.of<AppProvider>(context, listen: false).getRecordings(ERecordingType.wednesday), // a previously-obtained Future<String> or null
                 builder: (BuildContext context, AsyncSnapshot<List<RecordingModel>> snapshot) {
                   if(snapshot.connectionState != ConnectionState.done) {
                     return const Center(child: CircularProgressIndicator());

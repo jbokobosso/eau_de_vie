@@ -1,4 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:enum_to_string/enum_to_string.dart';
+
+enum ERecordingType {
+  wednesday,
+  sunday,
+  test
+}
 
 class RecordingModel{
   String? id;
@@ -7,12 +14,15 @@ class RecordingModel{
   String downloadUrl;
   bool isDownloaded;
   int soundDurationInMilliseconds;
+  ERecordingType recordingType;
+
 
   RecordingModel({
     required this.soundDurationInMilliseconds,
     required this.soundFile,
     required this.timestamp,
     required this.downloadUrl,
+    required this.recordingType,
     this.id,
     this.isDownloaded = false
   });
@@ -23,7 +33,8 @@ class RecordingModel{
       "soundFile": soundFile,
       "timestamp": timestamp,
       "downloadUrl": downloadUrl,
-      "soundDurationInMilliseconds": soundDurationInMilliseconds
+      "soundDurationInMilliseconds": soundDurationInMilliseconds,
+      "recordingType": EnumToString.convertToString(recordingType)
     };
   }
 
@@ -33,7 +44,8 @@ class RecordingModel{
       soundFile: firebaseData['soundFile'],
       timestamp: firebaseData['timestamp'],
       downloadUrl: firebaseData['downloadUrl'],
-      soundDurationInMilliseconds: firebaseData['soundDurationInMilliseconds']
+      soundDurationInMilliseconds: firebaseData['soundDurationInMilliseconds'],
+      recordingType: EnumToString.fromString([ERecordingType.wednesday, ERecordingType.sunday, ERecordingType.test], firebaseData['recordingType'])!
     );
   }
 }

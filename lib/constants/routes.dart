@@ -23,5 +23,5 @@ Map<String, Widget Function(BuildContext)> routes = <String, WidgetBuilder> {
   RouteNames.wednesday: (BuildContext context) => const WednesdayPage(),
   RouteNames.playing_page: (BuildContext context) => const PlayingPage(),
   RouteNames.studio_menu: (BuildContext context) => const StudioMenu(),
-  RouteNames.recording: (BuildContext context) => Recording(),
+  RouteNames.recording: (BuildContext context) => const Recording()
 };

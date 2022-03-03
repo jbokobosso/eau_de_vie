@@ -29,7 +29,13 @@ class PlayingProvider extends ChangeNotifier {
   Duration _soundDuration = const Duration(seconds: 86400); // default huge sound duration to prevent first render errors
 
   RecordingModel get soundInfos => _soundInfos;
-  RecordingModel _soundInfos = RecordingModel(soundDurationInMilliseconds: 0, soundFile: "", timestamp: Timestamp.now(), downloadUrl: "");
+  RecordingModel _soundInfos = RecordingModel(
+      soundDurationInMilliseconds: 0,
+      soundFile: "",
+      timestamp: Timestamp.now(),
+      downloadUrl: "",
+      recordingType: ERecordingType.test
+  );
 
   String playingSoundFullPath = "";
 

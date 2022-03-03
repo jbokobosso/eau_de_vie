@@ -1,8 +1,30 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:eau_de_vie/models/recording_model.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class Utils {
+
+  static ERecordingType getRecordingTypeFromDateTime(DateTime datetime) {
+    ERecordingType recordingType;
+    switch(datetime.weekday) {
+      case 3 : recordingType = ERecordingType.wednesday; break;
+      case 7 : recordingType = ERecordingType.sunday; break;
+      default: recordingType = ERecordingType.test; break;
+    }
+    return recordingType;
+  }
+
+  static ERecordingType getRecordingTypeFromTimestamp(Timestamp timestamp) {
+    var datetime = timestamp.toDate();
+    ERecordingType recordingType;
+    switch(datetime.weekday) {
+      case 3 : recordingType = ERecordingType.wednesday; break;
+      case 7 : recordingType = ERecordingType.sunday; break;
+      default: recordingType = ERecordingType.test; break;
+    }
+    return recordingType;
+  }
 
   static String formatDurationToString(Duration duration) {
     int durationInSeconds = duration.inSeconds;

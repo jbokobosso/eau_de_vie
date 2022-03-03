@@ -6,6 +6,7 @@ import 'package:eau_de_vie/constants/core_constants.dart';
 import 'package:eau_de_vie/models/recording_model.dart';
 import 'package:eau_de_vie/models/recording_state.dart';
 import 'package:eau_de_vie/utils/utils.dart';
+import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
@@ -237,7 +238,8 @@ class AppProvider extends ChangeNotifier {
             soundFile: "$id.${CoreConstants.recording_files_extension}",
             timestamp: Timestamp.fromDate(DateTime.now()),
             id: id,
-            downloadUrl: downloadUrl
+            downloadUrl: downloadUrl,
+            recordingType: Utils.getRecordingTypeFromDateTime(DateTime.now())
           );
           await addRecordingToFirebase(recordingModel);
           _isUploading = false;
@@ -256,10 +258,13 @@ class AppProvider extends ChangeNotifier {
     return oldRecordedIds;
   }
 
-  Future<List<RecordingModel>>  getRecordings() async {
+  Future<List<RecordingModel>>  getRecordings(ERecordingType recordingType) async {
     List<String> downloadedSoundIds = await getLocalDownloadedSoundIds();
     List<RecordingModel> recordingsList = [];
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection(CoreConstants.FCN_recordings).get();
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection(CoreConstants.FCN_recordings)
+        .where("recordingType", isEqualTo: EnumToString.convertToString(recordingType))
+        .get();
     querySnapshot.docs.forEach((doc) {
       late RecordingModel recordingModel;
       if(downloadedSoundIds.contains(doc['id'])) {
@@ -269,6 +274,7 @@ class AppProvider extends ChangeNotifier {
           soundDurationInMilliseconds: doc['soundDurationInMilliseconds'],
           timestamp: doc['timestamp'],
           downloadUrl: doc['downloadUrl'],
+          recordingType: Utils.getRecordingTypeFromTimestamp(doc['timestamp']),
           isDownloaded: true
         );
       } else {
@@ -278,6 +284,7 @@ class AppProvider extends ChangeNotifier {
             soundDurationInMilliseconds: doc['soundDurationInMilliseconds'],
             timestamp: doc['timestamp'],
             downloadUrl: doc['downloadUrl'],
+            recordingType: Utils.getRecordingTypeFromTimestamp(doc['timestamp']),
             isDownloaded: false
         );
       }
