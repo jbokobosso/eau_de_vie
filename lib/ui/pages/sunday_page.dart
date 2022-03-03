@@ -5,6 +5,7 @@ import 'package:eau_de_vie/models/recording_model.dart';
 import 'package:eau_de_vie/states/app_provider.dart';
 import 'package:eau_de_vie/states/playing_provider.dart';
 import 'package:eau_de_vie/ui/widgets/no_network.dart';
+import 'package:eau_de_vie/ui/widgets/playing_banner.dart';
 import 'package:eau_de_vie/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
@@ -110,32 +111,7 @@ class _SundayPageState extends State<SundayPage> {
                     },
                   ),
                 ),
-                Consumer<PlayingProvider>(
-                  builder: (context, playingProvider, child) => (playingProvider.player.processingState == ProcessingState.ready || playingProvider.player.processingState == ProcessingState.idle) && playingProvider.player.processingState != ProcessingState.completed
-                      ? Container(
-                          decoration: const BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topRight,
-                                end: Alignment.bottomLeft,
-                                colors: [
-                                  Colors.blue,
-                                  Colors.red,
-                                ],
-                              )
-                          ),
-                          width: MediaQuery.of(context).size.width,
-                          height: MediaQuery.of(context).size.height*0.1,
-                          child: ListTile(
-                            leading: playingProvider.player.playing
-                                ? IconButton(icon: Icon(Icons.pause, color: Colors.white, size: MediaQuery.of(context).size.width*0.10), onPressed: playingProvider.pause)
-                                : IconButton(icon: Icon(Icons.play_arrow, color: Colors.white, size: MediaQuery.of(context).size.width*0.12), onPressed: playingProvider.resume),
-                            title: Text(Utils.formatDateToHuman(playingProvider.soundInfos.timestamp.toDate()), style: Theme.of(context).textTheme.headline2),
-                            subtitle: Text(Utils.formatDurationToString(playingProvider.playbackPositionInDuration), style: Theme.of(context).textTheme.subtitle1),
-                            trailing: Text(Utils.formatDurationToString(playingProvider.soundDuration), style: Theme.of(context).textTheme.headline2),
-                          ),
-                        )
-                      : const SizedBox(height: 0),
-                )
+                const PlayingBanner()
               ],
             )
           ],

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:eau_de_vie/constants/core_constants.dart';
 import 'package:eau_de_vie/utils/utils.dart';
@@ -28,7 +29,7 @@ class PlayingProvider extends ChangeNotifier {
   Duration _soundDuration = const Duration(seconds: 86400); // default huge sound duration to prevent first render errors
 
   RecordingModel get soundInfos => _soundInfos;
-  late RecordingModel _soundInfos;
+  RecordingModel _soundInfos = RecordingModel(soundDurationInMilliseconds: 0, soundFile: "", timestamp: Timestamp.now(), downloadUrl: "");
 
   String playingSoundFullPath = "";
 

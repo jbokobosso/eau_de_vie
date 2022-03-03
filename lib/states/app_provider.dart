@@ -256,7 +256,7 @@ class AppProvider extends ChangeNotifier {
     return oldRecordedIds;
   }
 
-  Future<List<RecordingModel>> getRecordings() async {
+  Future<List<RecordingModel>>  getRecordings() async {
     List<String> downloadedSoundIds = await getLocalDownloadedSoundIds();
     List<RecordingModel> recordingsList = [];
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection(CoreConstants.FCN_recordings).get();
