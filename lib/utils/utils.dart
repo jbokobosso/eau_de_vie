@@ -4,6 +4,19 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 class Utils {
 
+  static String formatDurationToString(Duration duration) {
+    int durationInSeconds = duration.inSeconds;
+    if(durationInSeconds <= 60) {
+      var seconds = durationInSeconds < 10 ? '0$durationInSeconds' : durationInSeconds;
+      return "00:$seconds";
+    } else {
+      var minutesTemp = (durationInSeconds/60).floor();
+      var minutes = minutesTemp < 10 ? '0$minutesTemp' : minutesTemp;
+      var seconds = durationInSeconds%60;
+      return "$minutes:$seconds";
+    }
+  }
+
   static timestampToDateTime(Timestamp timestamp) {
     return DateTime.fromMillisecondsSinceEpoch(timestamp.millisecondsSinceEpoch);
   }

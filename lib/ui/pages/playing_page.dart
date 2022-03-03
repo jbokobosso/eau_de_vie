@@ -107,8 +107,8 @@ class _PlayingPageState extends State<PlayingPage> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            Text(Utils.formatDateToHuman(playingSound.timestamp.toDate()), style: Theme.of(context).textTheme.headline1),
-                            Text("Temps d'écoute: ${playingProvider.formatDurationToString(playingProvider.soundDuration)}", style: Theme.of(context).textTheme.subtitle1),
+                            Text(Utils.formatDateToHuman(playingSound.timestamp.toDate()), style: Theme.of(context).textTheme.headline2),
+                            Text("Temps d'écoute: ${playingProvider.formatDurationToString(playingProvider.soundDuration)}", style: Theme.of(context).textTheme.subtitle2),
                           ],
                         ),
                       ),

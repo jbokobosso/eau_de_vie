@@ -7,6 +7,7 @@ import 'package:eau_de_vie/states/playing_provider.dart';
 import 'package:eau_de_vie/ui/widgets/no_network.dart';
 import 'package:eau_de_vie/utils/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
 
 class SundayPage extends StatefulWidget {
@@ -27,85 +28,115 @@ class _SundayPageState extends State<SundayPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: const Text('Eau De Vie'), centerTitle: true),
-        body: Column(
+        body: Stack(
           children: [
-            Stack(
-              alignment: Alignment.center,
+            Column(
               children: [
-                Image.asset(FileAssets.listenBanner),
-                Text('Messages Dimanche', style: Theme.of(context).textTheme.headline1)
-              ],
-            ),
-            Expanded(
-              child: FutureBuilder<List<RecordingModel>>(
-                future: Provider.of<AppProvider>(context, listen: false).getRecordings(), // a previously-obtained Future<String> or null
-                builder: (BuildContext context, AsyncSnapshot<List<RecordingModel>> snapshot) {
-                  if(snapshot.connectionState != ConnectionState.done) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if(snapshot.hasData) {
-                    return ListView.builder(
-                        itemCount: snapshot.data?.length,
-                        itemBuilder: (context, index) => Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-                          decoration: const BoxDecoration(
-                              color: Color.fromRGBO(243, 243, 243, 1),
-                              borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                              boxShadow: [
-                                BoxShadow(color: Colors.grey, blurRadius: 2, spreadRadius: 2, offset: Offset(10.0, 6.0))
-                              ]
-                          ),
-                          child: ListTile(
-                            leading: CircleAvatar(
-                              backgroundColor: Colors.white,
-                              backgroundImage: AssetImage(FileAssets.sunday),
-                            ),
-                            title: Text( Utils.formatDateToHuman(snapshot.data![index].timestamp.toDate()),style: Theme.of(context).textTheme.bodyText2),
-                            trailing: SizedBox(
-                              width: MediaQuery.of(context).size.width*0.25,
-                              child: Row(
-                                children: [
-                                  Text(
-                                      Provider.of<AppProvider>(context, listen: false).formatDurationToString(Duration(milliseconds: snapshot.data![index].soundDurationInMilliseconds))
-                                  ),
-                                  snapshot.data![index].isDownloaded
-                                      ? const SizedBox(height: 0, width: 0)
-                                      : Provider.of<PlayingProvider>(context, listen: true).isDownloading && Provider.of<PlayingProvider>(context, listen: true).downloadingSoundId == snapshot.data![index].id
-                                      ? const CircularProgressIndicator()
-                                      : IconButton(
-                                      icon: const Icon(Icons.download),
-                                      onPressed: () async {
-                                        await Provider.of<PlayingProvider>(context, listen: false).downloadSound(snapshot.data![index]);
-                                        setState(() {
-
-                                        });
-                                      }
-                                  )
-                                ],
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Image.asset(FileAssets.listenBanner),
+                    Text('Messages Dimanche', style: Theme.of(context).textTheme.headline1)
+                  ],
+                ),
+                Expanded(
+                  child: FutureBuilder<List<RecordingModel>>(
+                    future: Provider.of<AppProvider>(context, listen: false).getRecordings(), // a previously-obtained Future<String> or null
+                    builder: (BuildContext context, AsyncSnapshot<List<RecordingModel>> snapshot) {
+                      if(snapshot.connectionState != ConnectionState.done) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if(snapshot.hasData) {
+                        return ListView.builder(
+                            itemCount: snapshot.data?.length,
+                            itemBuilder: (context, index) => Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                              decoration: const BoxDecoration(
+                                  color: Color.fromRGBO(243, 243, 243, 1),
+                                  borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                                  boxShadow: [
+                                    BoxShadow(color: Colors.grey, blurRadius: 2, spreadRadius: 2, offset: Offset(10.0, 6.0))
+                                  ]
                               ),
-                            ),
-                            onTap: () {
-                              if(snapshot.data![index].isDownloaded) {
-                                Provider.of<PlayingProvider>(context, listen: false).setPlayingSound(snapshot.data![index]);
-                                Navigator.of(context).pushNamed(RouteNames.playing_page, arguments: snapshot.data![index]);
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text("Veuillez télécharger d'abord"),
-                                    backgroundColor: Colors.red,
-                                  )
-                                );
-                              }
-                            },
+                              child: ListTile(
+                                leading: CircleAvatar(
+                                  backgroundColor: Colors.white,
+                                  backgroundImage: AssetImage(FileAssets.sunday),
+                                ),
+                                title: Text( Utils.formatDateToHuman(snapshot.data![index].timestamp.toDate()),style: Theme.of(context).textTheme.bodyText2),
+                                trailing: SizedBox(
+                                  width: MediaQuery.of(context).size.width*0.25,
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                          Provider.of<AppProvider>(context, listen: false).formatDurationToString(Duration(milliseconds: snapshot.data![index].soundDurationInMilliseconds))
+                                      ),
+                                      snapshot.data![index].isDownloaded
+                                          ? const SizedBox(height: 0, width: 0)
+                                          : Provider.of<PlayingProvider>(context, listen: true).isDownloading && Provider.of<PlayingProvider>(context, listen: true).downloadingSoundId == snapshot.data![index].id
+                                          ? const CircularProgressIndicator()
+                                          : IconButton(
+                                          icon: const Icon(Icons.download),
+                                          onPressed: () async {
+                                            await Provider.of<PlayingProvider>(context, listen: false).downloadSound(snapshot.data![index]);
+                                            setState(() {
+
+                                            });
+                                          }
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                onTap: () {
+                                  if(snapshot.data![index].isDownloaded) {
+                                    Provider.of<PlayingProvider>(context, listen: false).setPlayingSound(snapshot.data![index]);
+                                    Navigator.of(context).pushNamed(RouteNames.playing_page, arguments: snapshot.data![index]);
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text("Veuillez télécharger d'abord"),
+                                          backgroundColor: Colors.red,
+                                        )
+                                    );
+                                  }
+                                },
+                              ),
+                            )
+                        );
+                      } else if(snapshot.hasError) {
+                        throw snapshot.error!;
+                        return NotNetwork(() => Utils.showToast("Recharger la page"));
+                      }
+                      return NotNetwork(() => Utils.showToast("Recharger la page"));
+                    },
+                  ),
+                ),
+                Consumer<PlayingProvider>(
+                  builder: (context, playingProvider, child) => (playingProvider.player.processingState == ProcessingState.ready || playingProvider.player.processingState == ProcessingState.idle) && playingProvider.player.processingState != ProcessingState.completed
+                      ? Container(
+                          decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topRight,
+                                end: Alignment.bottomLeft,
+                                colors: [
+                                  Colors.blue,
+                                  Colors.red,
+                                ],
+                              )
+                          ),
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height*0.1,
+                          child: ListTile(
+                            leading: playingProvider.player.playing
+                                ? IconButton(icon: Icon(Icons.pause, color: Colors.white, size: MediaQuery.of(context).size.width*0.10), onPressed: playingProvider.pause)
+                                : IconButton(icon: Icon(Icons.play_arrow, color: Colors.white, size: MediaQuery.of(context).size.width*0.12), onPressed: playingProvider.resume),
+                            title: Text(Utils.formatDateToHuman(playingProvider.soundInfos.timestamp.toDate()), style: Theme.of(context).textTheme.headline2),
+                            subtitle: Text(Utils.formatDurationToString(playingProvider.playbackPositionInDuration), style: Theme.of(context).textTheme.subtitle1),
+                            trailing: Text(Utils.formatDurationToString(playingProvider.soundDuration), style: Theme.of(context).textTheme.headline2),
                           ),
                         )
-                    );
-                  } else if(snapshot.hasError) {
-                    throw snapshot.error!;
-                    return NotNetwork(() => Utils.showToast("Recharger la page"));
-                  }
-                  return NotNetwork(() => Utils.showToast("Recharger la page"));
-                },
-              ),
+                      : const SizedBox(height: 0),
+                )
+              ],
             )
           ],
         )

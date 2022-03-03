@@ -10,6 +10,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:eau_de_vie/models/recording_model.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:record/record.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PlayingProvider extends ChangeNotifier {
@@ -25,6 +26,9 @@ class PlayingProvider extends ChangeNotifier {
 
   Duration get soundDuration => _soundDuration;
   Duration _soundDuration = const Duration(seconds: 86400); // default huge sound duration to prevent first render errors
+
+  RecordingModel get soundInfos => _soundInfos;
+  late RecordingModel _soundInfos;
 
   String playingSoundFullPath = "";
 
@@ -52,6 +56,7 @@ class PlayingProvider extends ChangeNotifier {
       Directory appDocDir = await getApplicationDocumentsDirectory();
       await _player.setFilePath(appDocDir.path+"/"+recordingModel.soundFile);
       _soundDuration = _player.duration!;
+      _soundInfos = recordingModel;
       result = true;
       notifyListeners();
     } catch(e) {
@@ -179,12 +184,12 @@ class PlayingProvider extends ChangeNotifier {
 
   onSeekForward(){
     var seekValue = _playbackPositionInDuration.inSeconds + 10;
-    _player.seek(Duration(seconds: seekValue));
+    if(seekValue < soundDuration.inSeconds) _player.seek(Duration(seconds: seekValue));
   }
 
   onSeekBackward(){
     var seekValue = _playbackPositionInDuration.inSeconds - 10;
-    _player.seek(Duration(seconds: seekValue));
+    if(seekValue > 0) _player.seek(Duration(seconds: seekValue));
   }
 
   onAccelerate(){
