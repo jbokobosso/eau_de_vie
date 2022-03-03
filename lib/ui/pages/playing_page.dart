@@ -65,7 +65,7 @@ class _PlayingPageState extends State<PlayingPage> {
                   //     ],
                   //   ),
                   // ),
-                  Text("Min: 0", style: TextStyle(color: Colors.white, fontSize: 20.0)),
+                  const Text("Min: 0", style: TextStyle(color: Colors.white, fontSize: 20.0)),
                   Text("Current ${playingProvider.playbackPositionInDouble}", style: TextStyle(color: Colors.white, fontSize: 20.0)),
                   Text("Max: ${playingProvider.soundDuration.inSeconds.toDouble()}", style: TextStyle(color: Colors.white, fontSize: 20.0)),
                   SleekCircularSlider(

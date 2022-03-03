@@ -41,17 +41,14 @@ class AppProvider extends ChangeNotifier {
   RecordingModel get playingSound => _playingSound;
   late RecordingModel _playingSound;
 
-  void setPlayingSound(RecordingModel recordingModel) {
-    _playingSound = recordingModel;
-  }
 
-  void setPlaybackPosition(double newSliderValue) {
-    var newPlaybackPositionInSeconds = (newSliderValue * _soundDuration.inSeconds).ceil();
-    var newPlaybackPositionInDuration = Duration(seconds: newPlaybackPositionInSeconds);
-    _player.seek(newPlaybackPositionInDuration);
-    notifyListeners();
-  }
 
+
+
+
+  /* **************************************************** */
+  /* *************          UTILS         ************* */
+  /* **************************************************** */
   String formatDurationToString(Duration duration) {
     int durationInSeconds = duration.inSeconds;
     if(durationInSeconds <= 60) {
@@ -65,6 +62,21 @@ class AppProvider extends ChangeNotifier {
     }
   }
 
+  void setPlaybackPosition(double newSliderValue) {
+    var newPlaybackPositionInSeconds = (newSliderValue * _soundDuration.inSeconds).ceil();
+    var newPlaybackPositionInDuration = Duration(seconds: newPlaybackPositionInSeconds);
+    _player.seek(newPlaybackPositionInDuration);
+    notifyListeners();
+  }
+
+
+
+
+
+
+  /* **************************************************** */
+  /* *************     RECORD SOUND         ************* */
+  /* **************************************************** */
   void timerForRecording() {
     Timer.periodic(const Duration(seconds: 1), (timer) {
       _recordDuration = Duration(seconds: _recordDuration.inSeconds+1);
@@ -74,14 +86,6 @@ class AppProvider extends ChangeNotifier {
       }
       notifyListeners();
     });
-  }
-
-  void deleteRecordedFile() {
-    File recordedFile = File(_recordedPath);
-    if(recordedFile.existsSync()) {
-      recordedFile.deleteSync();
-    }
-    notifyListeners();
   }
 
   Future<void> loadLastRecordIfExists() async {
@@ -118,19 +122,12 @@ class AppProvider extends ChangeNotifier {
     getRecordedFileDuration();
   }
 
-  getPlayerState() {
-    Utils.showToast(_player.processingState.toString());
-    Utils.showToast(_player.playing.toString());
-  }
 
-  Future<String?> getRecordedFileDuration() async {
-    Duration? duration = await _player.setFilePath(_recordedPath);
-    String? soundTime = duration?.inSeconds.toString();
-    _soundDuration = duration!;
-    notifyListeners();
-    return soundTime;
-  }
 
+
+  /* **************************************************** */
+  /* *************     PLAYBACK CODE       ************* */
+  /* **************************************************** */
   void play() {
     if(_player.processingState == ProcessingState.idle && !_player.playing){
       _player.setFilePath(_recordedPath);
@@ -186,6 +183,31 @@ class AppProvider extends ChangeNotifier {
       _player.setSpeed(2.0);
     } else {
       _player.setSpeed(1.0);
+    }
+    notifyListeners();
+  }
+
+  Future<String?> getRecordedFileDuration() async {
+    Duration? duration = await _player.setFilePath(_recordedPath);
+    String? soundTime = duration?.inSeconds.toString();
+    _soundDuration = duration!;
+    notifyListeners();
+    return soundTime;
+  }
+
+
+
+
+
+
+  /* ************************************************************** */
+  /* *************     SEND RECORDING TO CLOUD       ************* */
+  /* ************************************************************ */
+
+  void deleteRecordedFile() {
+    File recordedFile = File(_recordedPath);
+    if(recordedFile.existsSync()) {
+      recordedFile.deleteSync();
     }
     notifyListeners();
   }
