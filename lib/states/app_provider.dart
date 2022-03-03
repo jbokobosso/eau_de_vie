@@ -265,6 +265,7 @@ class AppProvider extends ChangeNotifier {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection(CoreConstants.FCN_recordings)
         .where("recordingType", isEqualTo: EnumToString.convertToString(recordingType))
+        .orderBy("timestamp", descending: true)
         .get();
     List<RecordingModel> recordingsList = querySnapshot.docs.map((doc) => RecordingModel.fromMap(doc.data() as Map<String, dynamic>, doc['id'])).toList();
     List<RecordingModel> finalList =
