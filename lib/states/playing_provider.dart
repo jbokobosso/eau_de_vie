@@ -67,7 +67,6 @@ class PlayingProvider extends ChangeNotifier {
     _player.positionStream.listen((Duration positionEvent) {
       _playbackPositionInDouble = positionEvent.inSeconds.toDouble();
       _playbackPositionInDuration = positionEvent;
-      print("New position"+positionEvent.inSeconds.toString());
       notifyListeners();
     });
   }
@@ -170,5 +169,32 @@ class PlayingProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  changeSlider(double newSliderValue) {}
+  onSliderChange(double newSliderValue) {
+    int newPlaybackPositionInSeconds = (_soundDuration.inSeconds / newSliderValue).ceil();
+    Duration newPlaybackPositionInDuration = Duration(seconds: newPlaybackPositionInSeconds);
+    _player.seek(newPlaybackPositionInDuration);
+    Utils.showToast(newPlaybackPositionInSeconds.toString());
+    notifyListeners();
+  }
+
+  onSeekForward(){
+    var seekValue = _playbackPositionInDuration.inSeconds + 10;
+    _player.seek(Duration(seconds: seekValue));
+  }
+
+  onSeekBackward(){
+    var seekValue = _playbackPositionInDuration.inSeconds - 10;
+    _player.seek(Duration(seconds: seekValue));
+  }
+
+  onAccelerate(){
+    if(_player.speed == 1.0) {
+      _player.setSpeed(1.5);
+    } else if(_player.speed == 1.5) {
+      _player.setSpeed(2.0);
+    } else {
+      _player.setSpeed(1.0);
+    }
+    notifyListeners();
+  }
 }

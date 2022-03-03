@@ -155,7 +155,7 @@ class _RecordingState extends State<Recording> {
                                   inactiveColor: Colors.white,
                                   activeColor: Colors.blue,
                                   value: (appProvider.playbackPosition.inSeconds / appProvider.soundDuration.inSeconds),
-                                  onChanged: (newValue) => appProvider.setPlaybackPosition(newValue)),
+                                  onChanged: (newValue) => appProvider.onSliderChange(newValue)),
                             ),
                             IconButton(
                                 onPressed: appProvider.accelerate,

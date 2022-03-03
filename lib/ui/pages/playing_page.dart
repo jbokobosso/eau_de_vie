@@ -65,14 +65,10 @@ class _PlayingPageState extends State<PlayingPage> {
                   //     ],
                   //   ),
                   // ),
-                  const Text("Min: 0", style: TextStyle(color: Colors.white, fontSize: 20.0)),
-                  Text("Current ${playingProvider.playbackPositionInDouble}", style: TextStyle(color: Colors.white, fontSize: 20.0)),
-                  Text("Max: ${playingProvider.soundDuration.inSeconds.toDouble()}", style: TextStyle(color: Colors.white, fontSize: 20.0)),
                   SleekCircularSlider(
                     appearance: CircularSliderAppearance(
                       size: MediaQuery.of(context).size.width*0.5
                     ),
-                    onChange: (double newValue) {playingProvider.changeSlider(newValue);},
                     initialValue: playingProvider.playbackPositionInDouble,
                     min: 0,
                     max: playingProvider.soundDuration.inSeconds.toDouble(),
@@ -87,14 +83,14 @@ class _PlayingPageState extends State<PlayingPage> {
                       ],
                     ),
                   ),
-                  Slider(
-                      min: 0,
-                      max: playingProvider.soundDuration.inSeconds.toDouble(),
-                      inactiveColor: Colors.white,
-                      activeColor: Colors.blue,
-                      value: playingProvider.playbackPositionInDouble,
-                      onChanged: null
-                  ),
+                  // Slider(
+                  //     min: 0,
+                  //     max: playingProvider.soundDuration.inSeconds.toDouble(),
+                  //     inactiveColor: Colors.white,
+                  //     activeColor: Colors.blue,
+                  //     value: playingProvider.playbackPositionInDouble,
+                  //     onChanged: null
+                  // ),
                   Stack(
                     alignment: Alignment.center,
                     children: [
@@ -111,8 +107,8 @@ class _PlayingPageState extends State<PlayingPage> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            // Text("Temps d'écoute: ${playingProvider.formatDurationToString(playingProvider.soundDuration)}", style: Theme.of(context).textTheme.headline2),
-                            Text(Utils.formatDateToHuman(playingSound.timestamp.toDate()), style: Theme.of(context).textTheme.subtitle2),
+                            Text(Utils.formatDateToHuman(playingSound.timestamp.toDate()), style: Theme.of(context).textTheme.headline1),
+                            Text("Temps d'écoute: ${playingProvider.formatDurationToString(playingProvider.soundDuration)}", style: Theme.of(context).textTheme.subtitle1),
                           ],
                         ),
                       ),
@@ -122,7 +118,7 @@ class _PlayingPageState extends State<PlayingPage> {
                     alignment: Alignment.center,
                     children: [
                       Blur(
-                          borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                          borderRadius: const BorderRadius.all(Radius.circular(10.0)),
                           blur: 3,
                           blurColor: Colors.white,
                           child: Container(
@@ -139,12 +135,18 @@ class _PlayingPageState extends State<PlayingPage> {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                                   children: [
-                                    IconButton(icon: Image.asset(FileAssets.rewind), onPressed: () {  }),
+                                    IconButton(icon: Image.asset(FileAssets.rewind), onPressed: () => playingProvider.onSeekBackward()),
                                     playingProvider.player.playing
-                                        ? IconButton(icon: const Icon(Icons.pause, color: Colors.white), onPressed: playingProvider.pause)
-                                        : IconButton(icon: const Icon(Icons.play_arrow, color: Colors.white), onPressed: () => playingProvider.play(playingSound)),
-                                    IconButton(icon: Image.asset(FileAssets.forward), onPressed: () { print('Pressed'); }),
-                                    IconButton(icon: Image.asset(FileAssets.accelerate), onPressed: () { print('Pressed'); }),
+                                        ? IconButton(icon: Icon(Icons.pause, color: Colors.white, size: MediaQuery.of(context).size.width*0.12), onPressed: playingProvider.pause)
+                                        : IconButton(icon: Icon(Icons.play_arrow, color: Colors.white, size: MediaQuery.of(context).size.width*0.12), onPressed: () => playingProvider.play(playingSound)),
+                                    IconButton(icon: Image.asset(FileAssets.forward), onPressed: () => playingProvider.onSeekForward()),
+                                    IconButton(
+                                        icon: Text(
+                                            "${playingProvider.player.speed == 1.5 ? "1.5x" : playingProvider.player.speed.ceil()}x",
+                                            style: TextStyle(color: Colors.white, fontSize: MediaQuery.of(context).size.width*0.05)
+                                        ),
+                                        onPressed: () => playingProvider.onAccelerate()
+                                    ),
                                   ],
                                 ),
                               ],

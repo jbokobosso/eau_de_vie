@@ -62,11 +62,28 @@ class AppProvider extends ChangeNotifier {
     }
   }
 
-  void setPlaybackPosition(double newSliderValue) {
-    var newPlaybackPositionInSeconds = (newSliderValue * _soundDuration.inSeconds).ceil();
-    var newPlaybackPositionInDuration = Duration(seconds: newPlaybackPositionInSeconds);
-    _player.seek(newPlaybackPositionInDuration);
+  Future<String?> getRecordedFileDuration() async {
+    Duration? duration = await _player.setFilePath(_recordedPath);
+    String? soundTime = duration?.inSeconds.toString();
+    _soundDuration = duration!;
     notifyListeners();
+    return soundTime;
+  }
+
+  listenPlaybackEvents() {
+    _player.playbackEventStream.listen((event) {
+      if(event.processingState == ProcessingState.completed) {
+        stop();
+        notifyListeners();
+      }
+    });
+  }
+
+  listenPlaybackPosition() {
+    _player.positionStream.listen((Duration positionEvent) {
+      _playbackPosition = positionEvent;
+      notifyListeners();
+    });
   }
 
 
@@ -145,22 +162,6 @@ class AppProvider extends ChangeNotifier {
     listenPlaybackPosition();
   }
 
-  listenPlaybackEvents() {
-    _player.playbackEventStream.listen((event) {
-      if(event.processingState == ProcessingState.completed) {
-        stop();
-        notifyListeners();
-      }
-    });
-  }
-
-  listenPlaybackPosition() {
-    _player.positionStream.listen((Duration positionEvent) {
-      _playbackPosition = positionEvent;
-      notifyListeners();
-    });
-  }
-
   void pause() {
     _player.pause();
     notifyListeners();
@@ -187,12 +188,11 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<String?> getRecordedFileDuration() async {
-    Duration? duration = await _player.setFilePath(_recordedPath);
-    String? soundTime = duration?.inSeconds.toString();
-    _soundDuration = duration!;
+  void onSliderChange(double newSliderValue) {
+    var newPlaybackPositionInSeconds = (newSliderValue * _soundDuration.inSeconds).ceil();
+    var newPlaybackPositionInDuration = Duration(seconds: newPlaybackPositionInSeconds);
+    _player.seek(newPlaybackPositionInDuration);
     notifyListeners();
-    return soundTime;
   }
 
 
