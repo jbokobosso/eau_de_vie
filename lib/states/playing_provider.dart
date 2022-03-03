@@ -91,21 +91,26 @@ class PlayingProvider extends ChangeNotifier {
       return;
     }
     // Then if not yet downloaded, download sound to local
-    Utils.showToast(Utils.formatDateToHuman(recordingModel.timestamp.toDate()));
     await _requestPermission(Permission.storage);
-    Utils.showToast("Téléchargement en cours...");
     Directory appDocDir = await getApplicationDocumentsDirectory();
     Dio dio = Dio();
     try {
       var result = await dio.download(recordingModel.downloadUrl, appDocDir.path+"/"+recordingModel.soundFile);
+      if(result.statusCode == 200) {
+        playingSoundFullPath = appDocDir.path+"/"+recordingModel.soundFile;
+        // Finally update local database for the downloaded file
+        oldRecordedIds.add(recordingModel.id!);
+        prefs.setStringList(CoreConstants.S_downloaded_sounds, oldRecordedIds);
+        Utils.showSuccessToast("Succès !");
+      }
     } catch(e) {
-      Utils.showToast("Pas d'internet, veuillez reéssayer");
+      if (kDebugMode) {
+        Utils.showErrorToast("Erreur, veuillez reéssayer");
+        print(e.toString());
+      }
+    } finally {
+      isDownloading = false; notifyListeners();
     }
-    playingSoundFullPath = appDocDir.path+"/"+recordingModel.soundFile;
-    // Finally update local database for the downloaded file
-    oldRecordedIds.add(recordingModel.id!);
-    prefs.setStringList(CoreConstants.S_downloaded_sounds, oldRecordedIds);
-    isDownloading = false; notifyListeners();
   }
 
   play(RecordingModel recordingModel) async {

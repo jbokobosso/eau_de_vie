@@ -109,14 +109,12 @@ class AppProvider extends ChangeNotifier {
     _recordingState = ERecordingState.recording;
     notifyListeners();
     _recordedPath = '${appDocDir.path}/sound.${CoreConstants.recording_files_extension}';
-    Utils.showToast(recordingState.toString());
   }
 
   void stopRecording() async {
     _record.stop();
     _recordingState = ERecordingState.stoped;
     notifyListeners();
-    Utils.showToast(recordingState.toString());
     getRecordedFileDuration();
   }
 
@@ -213,10 +211,11 @@ class AppProvider extends ChangeNotifier {
         if(event.totalBytes == event.bytesTransferred) { // for some reason i do not guess yet, this is executing two times. So the second condition is to ensure it do not
           String downloadUrl = await event.ref.getDownloadURL();
           RecordingModel recordingModel = RecordingModel(
-              soundFile: "$id.${CoreConstants.recording_files_extension}",
-              timestamp: Timestamp.fromDate(DateTime.now()),
-              id: id,
-              downloadUrl: downloadUrl
+            soundDurationInMilliseconds: _soundDuration.inMilliseconds,
+            soundFile: "$id.${CoreConstants.recording_files_extension}",
+            timestamp: Timestamp.fromDate(DateTime.now()),
+            id: id,
+            downloadUrl: downloadUrl
           );
           await addRecordingToFirebase(recordingModel);
           _isUploading = false;
@@ -243,16 +242,18 @@ class AppProvider extends ChangeNotifier {
       late RecordingModel recordingModel;
       if(downloadedSoundIds.contains(doc['id'])) {
         recordingModel = RecordingModel(
-            id: doc['id'],
-            soundFile: doc['soundFile'],
-            timestamp: doc['timestamp'],
-            downloadUrl: doc['downloadUrl'],
-            isDownloaded: true
+          id: doc['id'],
+          soundFile: doc['soundFile'],
+          soundDurationInMilliseconds: doc['soundDurationInMilliseconds'],
+          timestamp: doc['timestamp'],
+          downloadUrl: doc['downloadUrl'],
+          isDownloaded: true
         );
       } else {
         recordingModel = RecordingModel(
             id: doc['id'],
             soundFile: doc['soundFile'],
+            soundDurationInMilliseconds: doc['soundDurationInMilliseconds'],
             timestamp: doc['timestamp'],
             downloadUrl: doc['downloadUrl'],
             isDownloaded: false

@@ -39,9 +39,10 @@ class _SundayPageState extends State<SundayPage> {
             Expanded(
               child: FutureBuilder<List<RecordingModel>>(
                 future: Provider.of<AppProvider>(context, listen: false).getRecordings(), // a previously-obtained Future<String> or null
-
                 builder: (BuildContext context, AsyncSnapshot<List<RecordingModel>> snapshot) {
-                  if(snapshot.hasData) {
+                  if(snapshot.connectionState != ConnectionState.done) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if(snapshot.hasData) {
                     return ListView.builder(
                         itemCount: snapshot.data?.length,
                         itemBuilder: (context, index) => Container(
@@ -59,35 +60,50 @@ class _SundayPageState extends State<SundayPage> {
                               backgroundImage: AssetImage(FileAssets.sunday),
                             ),
                             title: Text( Utils.formatDateToHuman(snapshot.data![index].timestamp.toDate()),style: Theme.of(context).textTheme.bodyText2),
-                            trailing: snapshot.data![index].isDownloaded
-                                ? const SizedBox(height: 0, width: 0)
-                                : Provider.of<PlayingProvider>(context, listen: true).isDownloading && Provider.of<PlayingProvider>(context, listen: true).downloadingSoundId == snapshot.data![index].id
-                                ? const CircularProgressIndicator()
-                                : IconButton(
-                                    icon: const Icon(Icons.download),
-                                    onPressed: () async {
-                                      await Provider.of<PlayingProvider>(context, listen: false).downloadSound(snapshot.data![index]);
-                                      setState(() {
-
-                                      });
-                                    }
+                            trailing: SizedBox(
+                              width: MediaQuery.of(context).size.width*0.25,
+                              child: Row(
+                                children: [
+                                  Text(
+                                      Provider.of<AppProvider>(context, listen: false).formatDurationToString(Duration(milliseconds: snapshot.data![index].soundDurationInMilliseconds))
                                   ),
+                                  snapshot.data![index].isDownloaded
+                                      ? const SizedBox(height: 0, width: 0)
+                                      : Provider.of<PlayingProvider>(context, listen: true).isDownloading && Provider.of<PlayingProvider>(context, listen: true).downloadingSoundId == snapshot.data![index].id
+                                      ? const CircularProgressIndicator()
+                                      : IconButton(
+                                      icon: const Icon(Icons.download),
+                                      onPressed: () async {
+                                        await Provider.of<PlayingProvider>(context, listen: false).downloadSound(snapshot.data![index]);
+                                        setState(() {
+
+                                        });
+                                      }
+                                  )
+                                ],
+                              ),
+                            ),
                             onTap: () {
                               if(snapshot.data![index].isDownloaded) {
                                 Provider.of<AppProvider>(context, listen: false).setPlayingSound(snapshot.data![index]);
                                 Navigator.of(context).pushNamed(RouteNames.playing_page, arguments: snapshot.data![index]);
                               } else {
-                                Utils.showToast("Veuillez télécharger d'abord");
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text("Veuillez télécharger d'abord"),
+                                    backgroundColor: Colors.red,
+                                  )
+                                );
                               }
                             },
                           ),
                         )
                     );
                   } else if(snapshot.hasError) {
+                    throw snapshot.error!;
                     return NotNetwork(() => Utils.showToast("Recharger la page"));
-                  } else {
-                    return const Center(child: CircularProgressIndicator());
                   }
+                  return NotNetwork(() => Utils.showToast("Recharger la page"));
                 },
               ),
             )
