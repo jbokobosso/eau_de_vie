@@ -241,6 +241,8 @@ class AppProvider extends ChangeNotifier {
             downloadUrl: downloadUrl,
             recordingType: Utils.getRecordingTypeFromDateTime(DateTime.now())
           );
+          DateTime adjustedDate = Utils.checkRecordingTypeWasAdjusted(DateTime.now());
+          recordingModel.timestamp = Timestamp.fromDate(adjustedDate);
           await addRecordingToFirebase(recordingModel);
           _isUploading = false;
           deleteRecordedFile();

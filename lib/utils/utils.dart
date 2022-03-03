@@ -18,6 +18,34 @@ class Utils {
     return recordingType;
   }
 
+  static DateTime checkRecordingTypeWasAdjusted(DateTime datetime) {
+    DateTime result = datetime; // if date must not be adjusted, return the correct date that would be the active day
+    if(datetime.weekday != 3 && datetime.weekday != 7) {
+      if(datetime.weekday > 3) {
+        int daysDifference = datetime.weekday-3;
+        result = datetime.subtract(Duration(days: daysDifference));
+      } else {
+        int daysDifference = datetime.weekday;
+        result = datetime.subtract(Duration(days: daysDifference));
+      }
+    }
+    return result;
+  }
+
+  static void testCheckRecordingTypeWasAdjusted(DateTime datetime) {
+    DateTime result = datetime; // if date must not be adjusted, return the correct date that would be the active day
+    if(datetime.weekday != 3 && datetime.weekday != 7) {
+      if(datetime.weekday > 3) {
+        int daysDifference = datetime.weekday-3;
+        result = datetime.subtract(Duration(days: daysDifference));
+      } else {
+        int daysDifference = datetime.weekday;
+        result = datetime.subtract(Duration(days: daysDifference));
+      }
+    }
+    Utils.showToast(formatDateToHuman(result));
+  }
+
   static String formatDurationToString(Duration duration) {
     int durationInSeconds = duration.inSeconds;
     if(durationInSeconds <= 60) {

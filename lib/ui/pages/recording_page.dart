@@ -62,7 +62,7 @@ class _RecordingState extends State<Recording> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 // GestureDetector(
-                //   onTap: () => Utils.getRecordingTypeFromDateTime(DateTime.now()),
+                //   onTap: () => Utils.testCheckRecordingTypeWasAdjusted(DateTime.now()),
                 //   child: Text('Get day type test', style: Theme.of(context).textTheme.headline1),
                 // ),
                 Container(
