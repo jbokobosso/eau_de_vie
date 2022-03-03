@@ -46,16 +46,28 @@ class PlayingProvider extends ChangeNotifier {
     }
   }
 
-  loadSound(String soundUrl) async {
-    await _player.setUrl(soundUrl);
-    _soundDuration = _player.duration!;
-    notifyListeners();
+  Future<bool> setPlayingSound(RecordingModel recordingModel) async {
+    bool result = false;
+    try {
+      Directory appDocDir = await getApplicationDocumentsDirectory();
+      await _player.setFilePath(appDocDir.path+"/"+recordingModel.soundFile);
+      _soundDuration = _player.duration!;
+      result = true;
+      notifyListeners();
+    } catch(e) {
+      result = false;
+      Utils.showErrorToast("Erreur chargement, reprenez...");
+      if (kDebugMode) {
+        print(e.toString());
+      }}
+    return result;
   }
 
   listenPlaybackPosition() {
     _player.positionStream.listen((Duration positionEvent) {
       _playbackPositionInDouble = positionEvent.inSeconds.toDouble();
       _playbackPositionInDuration = positionEvent;
+      print("New position"+positionEvent.inSeconds.toString());
       notifyListeners();
     });
   }
@@ -139,11 +151,8 @@ class PlayingProvider extends ChangeNotifier {
       await _player.play();
       notifyListeners();
     }
-    else {
-      Utils.showToast(EnumToString.convertToString(_player.processingState));
-    }
-    listenPlaybackPosition();
     listenPlaybackEvents();
+    listenPlaybackPosition();
   }
 
   void pause() {

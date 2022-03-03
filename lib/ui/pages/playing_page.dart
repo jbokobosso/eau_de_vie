@@ -50,7 +50,6 @@ class _PlayingPageState extends State<PlayingPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Text('Dimanches', style: Theme.of(context).textTheme.headline1),
-                  playingProvider.isDownloading ? CircularProgressIndicator() : Container(),
                   // Container(
                   //   padding: EdgeInsets.all(20.0),
                   //   width: MediaQuery.of(context).size.width*0.7,
@@ -66,6 +65,9 @@ class _PlayingPageState extends State<PlayingPage> {
                   //     ],
                   //   ),
                   // ),
+                  Text("Min: 0", style: TextStyle(color: Colors.white, fontSize: 20.0)),
+                  Text("Current ${playingProvider.playbackPositionInDouble}", style: TextStyle(color: Colors.white, fontSize: 20.0)),
+                  Text("Max: ${playingProvider.soundDuration.inSeconds.toDouble()}", style: TextStyle(color: Colors.white, fontSize: 20.0)),
                   SleekCircularSlider(
                     appearance: CircularSliderAppearance(
                       size: MediaQuery.of(context).size.width*0.5
@@ -84,6 +86,14 @@ class _PlayingPageState extends State<PlayingPage> {
                         )
                       ],
                     ),
+                  ),
+                  Slider(
+                      min: 0,
+                      max: playingProvider.soundDuration.inSeconds.toDouble(),
+                      inactiveColor: Colors.white,
+                      activeColor: Colors.blue,
+                      value: playingProvider.playbackPositionInDouble,
+                      onChanged: null
                   ),
                   Stack(
                     alignment: Alignment.center,

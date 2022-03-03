@@ -85,7 +85,7 @@ class _SundayPageState extends State<SundayPage> {
                             ),
                             onTap: () {
                               if(snapshot.data![index].isDownloaded) {
-                                Provider.of<AppProvider>(context, listen: false).setPlayingSound(snapshot.data![index]);
+                                Provider.of<PlayingProvider>(context, listen: false).setPlayingSound(snapshot.data![index]);
                                 Navigator.of(context).pushNamed(RouteNames.playing_page, arguments: snapshot.data![index]);
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
