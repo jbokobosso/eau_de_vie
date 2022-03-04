@@ -51,7 +51,7 @@ class _WednesdayPageState extends State<WednesdayPage> {
                           child: ListTile(
                             leading: CircleAvatar(
                               backgroundColor: Colors.white,
-                              backgroundImage: AssetImage(FileAssets.sunday),
+                              backgroundImage: AssetImage(FileAssets.wednesday),
                             ),
                             title: Text( Utils.formatDateToHuman(snapshot.data![index].timestamp.toDate()),style: Theme.of(context).textTheme.bodyText2),
                             trailing: SizedBox(
