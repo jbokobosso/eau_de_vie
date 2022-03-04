@@ -61,10 +61,7 @@ class _RecordingState extends State<Recording> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                // GestureDetector(
-                //   onTap: () => Utils.testCheckRecordingTypeWasAdjusted(DateTime.now()),
-                //   child: Text('Get day type test', style: Theme.of(context).textTheme.headline1),
-                // ),
+                Text(Utils.formatDateToHuman(Utils.checkRecordingTypeWasAdjusted(DateTime.now())), style: Theme.of(context).textTheme.headline1),
                 Container(
                   padding: const EdgeInsets.all(20.0),
                   width: MediaQuery.of(context).size.width*0.7,
@@ -75,22 +72,20 @@ class _RecordingState extends State<Recording> {
                   ),
                   child: Consumer<AppProvider>(
                       builder: (context, appProvider, child) => Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           File(appProvider.recordedPath).existsSync() && appProvider.recordingState != ERecordingState.recording
-                              ? IconButton(onPressed: appProvider.sendFileOnCloud, icon: Icon(Icons.send, color: Colors.green, size: MediaQuery.of(context).size.width*0.13))
+                              ? IconButton(onPressed: appProvider.sendFileOnCloud, icon: const Icon(Icons.cloud_upload, color: Colors.green), iconSize: MediaQuery.of(context).size.width*0.15)
                               : Icon(Icons.mic_rounded, color: micColor, size: MediaQuery.of(context).size.width*0.25),
                           appProvider.isUploading
                               ? Column(children: [
                                   const CircularProgressIndicator(),
-                                  Text(appProvider.uploadPercentage.toStringAsFixed(0)+"%", style: const TextStyle(fontSize: 20.0),)
+                                  Text("${appProvider.uploadPercentage}%", style: const TextStyle(fontSize: 20.0),)
                                 ])
                               : Container(),
                           appProvider.recordingState == ERecordingState.recording
                               ? Text(appProvider.formatDurationToString(appProvider.recordDuration), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).size.width*0.15))
                               : Text("--:--", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).size.width*0.15)),
-                          appProvider.recordingState == ERecordingState.init || appProvider.recordingState == ERecordingState.stoped
-                              ? Text('Cliquez sur Démarrer', style: TextStyle(color: Color.fromRGBO(100, 113, 150, 1), fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).size.width*0.04))
-                              : Container()
                         ],
                       )
                   ),
@@ -100,8 +95,28 @@ class _RecordingState extends State<Recording> {
                     children: [
                       appProvider.recordingState == ERecordingState.init || appProvider.recordingState == ERecordingState.stoped ? ElevatedButton(
                         onPressed: () {
-                          Provider.of<AppProvider>(context, listen: false).recordVoice();
-                          blinkMicrophoneColor();
+                          if(appProvider.checkRecordingExists()) {
+                            showDialog(
+                              context: context,
+                              builder: (_) => AlertDialog(
+                                content: const Text("Un enregistrement existe déjà. Voulez-vous le remplacer ?"),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Provider.of<AppProvider>(context, listen: false).recordVoice();
+                                      blinkMicrophoneColor();
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text("Oui", style: TextStyle(color: Colors.red))
+                                  ),
+                                  TextButton(onPressed: Navigator.of(context).pop, child: const Text("Non", style: TextStyle(color: Colors.blue)))
+                                ],
+                              )
+                            );
+                          } else {
+                            Provider.of<AppProvider>(context, listen: false).recordVoice();
+                            blinkMicrophoneColor();
+                          }
                         },
                         style: ButtonStyle(
                             backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
@@ -110,7 +125,7 @@ class _RecordingState extends State<Recording> {
                         ),
                         child: Row(
                           children: [
-                            Icon(Icons.play_arrow, color: Color.fromRGBO(253, 120, 150, 1), size: MediaQuery.of(context).size.width*0.12,),
+                            Icon(Icons.play_arrow, color: const Color.fromRGBO(253, 120, 150, 1), size: MediaQuery.of(context).size.width*0.12,),
                             const Text('Démarrer', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Color.fromRGBO(100, 113, 150, 1)))
                           ],
                         ),

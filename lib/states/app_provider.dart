@@ -87,6 +87,10 @@ class AppProvider extends ChangeNotifier {
     });
   }
 
+  bool checkRecordingExists() {
+    return File(_recordedPath).existsSync() && _recordingState != ERecordingState.recording;
+  }
+
 
 
 
