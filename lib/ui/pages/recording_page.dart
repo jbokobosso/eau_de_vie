@@ -94,7 +94,7 @@ class _RecordingState extends State<Recording> {
                   builder: (context, appProvider, child) => Column(
                     children: [
                       appProvider.recordingState == ERecordingState.init || appProvider.recordingState == ERecordingState.stoped ? ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           if(appProvider.checkRecordingExists()) {
                             showDialog(
                               context: context,
@@ -114,8 +114,22 @@ class _RecordingState extends State<Recording> {
                               )
                             );
                           } else {
-                            Provider.of<AppProvider>(context, listen: false).recordVoice();
-                            blinkMicrophoneColor();
+                            bool result = await Provider.of<AppProvider>(context, listen: false).recordVoice();
+                            if(result) {
+                              blinkMicrophoneColor();
+                            } else {
+                              showDialog(context: context, builder: (_) => AlertDialog(
+                                content: const Text(
+                                    "Vous devez donner la permission à l'application afin de "
+                                        "commencer l'enregistrement. Veuillez de nouveau cliquer sur Démarrer et accorder la permission "
+                                        "lorsqu'elle vous sera demandée",
+                                  textAlign: TextAlign.justify,
+                                ),
+                                actions: [
+                                  TextButton(onPressed: Navigator.of(context).pop, child: const Text("D'accord"))
+                                ],
+                              ));
+                            }
                           }
                         },
                         style: ButtonStyle(

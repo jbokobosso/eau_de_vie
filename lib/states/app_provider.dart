@@ -122,19 +122,24 @@ class AppProvider extends ChangeNotifier {
     }
   }
 
-  void recordVoice() async {
-    bool result = await _record.hasPermission();
-    Directory appDocDir = await getApplicationDocumentsDirectory();
-    await _record.start(
-      path: '${appDocDir.path}/sound.${CoreConstants.recording_files_extension}', // required
-      encoder: AudioEncoder.AAC, // by default
-      bitRate: 128000, // by default
-      samplingRate: 44100, // by default
-    );
-    timerForRecording();
-    _recordingState = ERecordingState.recording;
-    notifyListeners();
-    _recordedPath = '${appDocDir.path}/sound.${CoreConstants.recording_files_extension}';
+  Future<bool> recordVoice() async {
+    try {
+      await _record.hasPermission();
+      Directory appDocDir = await getApplicationDocumentsDirectory();
+      await _record.start(
+        path: '${appDocDir.path}/sound.${CoreConstants.recording_files_extension}', // required
+        encoder: AudioEncoder.AAC, // by default
+        bitRate: 128000, // by default
+        samplingRate: 44100, // by default
+      );
+      timerForRecording();
+      _recordingState = ERecordingState.recording;
+      notifyListeners();
+      _recordedPath = '${appDocDir.path}/sound.${CoreConstants.recording_files_extension}';
+      return true;
+    } catch(e) {
+      return false;
+    }
   }
 
   void stopRecording() async {
