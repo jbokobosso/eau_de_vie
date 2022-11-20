@@ -28,6 +28,8 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   # Core
+  url_launcher: ^6.1.6
+  app_version: ^0.0.2
   nanoid: ^1.0.0
   dio: ^4.0.4
   permission_handler: ^8.2.6

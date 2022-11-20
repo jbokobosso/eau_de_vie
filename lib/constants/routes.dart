@@ -1,4 +1,5 @@
 
+import 'package:eau_de_vie/ui/pages/about.dart';
 import 'package:eau_de_vie/ui/pages/auth/otp_page.dart';
 import 'package:eau_de_vie/ui/pages/auth/phone_verification_page.dart';
 import 'package:eau_de_vie/ui/pages/home_page.dart';
@@ -19,6 +20,7 @@ class RouteNames {
   static String recording = "/recording";
   static String otp = "/otp";
   static String phone_verification = "/phone_verification";
+  static String about = "/about";
 }
 
 Map<String, Widget Function(BuildContext)> routes = <String, WidgetBuilder> {
@@ -29,5 +31,6 @@ Map<String, Widget Function(BuildContext)> routes = <String, WidgetBuilder> {
   RouteNames.studio_menu: (BuildContext context) => const StudioMenu(),
   RouteNames.recording: (BuildContext context) => const Recording(),
   RouteNames.otp: (BuildContext context) => const OtpPage(),
-  RouteNames.phone_verification: (BuildContext context) => const PhoneVerificationPage()
+  RouteNames.phone_verification: (BuildContext context) => const PhoneVerificationPage(),
+  RouteNames.about: (BuildContext context) => const AboutPage()
 };
