@@ -1,6 +1,7 @@
 import 'package:eau_de_vie/constants/core_constants.dart';
 import 'package:eau_de_vie/constants/routes.dart';
 import 'package:eau_de_vie/constants/custom_theme.dart';
+import 'package:eau_de_vie/providers/auth_provider.dart';
 import 'package:eau_de_vie/states/app_provider.dart';
 import 'package:eau_de_vie/states/playing_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -13,6 +14,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (context) => AuthProvider()),
         ChangeNotifierProvider(create: (context) => AppProvider()),
         ChangeNotifierProvider(create: (context) => PlayingProvider()),
       ],
