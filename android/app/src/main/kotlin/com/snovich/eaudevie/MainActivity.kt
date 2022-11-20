@@ -1,4 +1,4 @@
-package org.eaudevie
+package com.snovich.eaudevie
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -7,6 +7,43 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:946241726764:android:f56b859d1da0e07069a489",
+        "android_client_info": {
+          "package_name": "com.snovich.eaudevie"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "946241726764-t8paj8nks98pq8bp8d91n32qagk0n8c1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.snovich.eaudevie",
+            "certificate_hash": "6e66318354397b60a001ec340ae4129b3b48f220"
+          }
+        },
+        {
+          "client_id": "946241726764-p2d7pbhqrncbr9nho9cg478u8akh5b43.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCTEoiJOFp-Zv1jKvKY4ubcMAikg1mMbp0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "946241726764-p2d7pbhqrncbr9nho9cg478u8akh5b43.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:946241726764:android:4ffc2a1ebb0ced6569a489",
         "android_client_info": {
           "package_name": "org.eaudevie"
