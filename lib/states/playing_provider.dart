@@ -115,6 +115,11 @@ class PlayingProvider extends ChangeNotifier {
     }
     // Then if not yet downloaded, download sound to local
     await _requestPermission(Permission.storage);
+    if(await Permission.storage.status != PermissionStatus.granted) {
+      Utils.showErrorToast("Permission stockage non accordée");
+      isDownloading = false; notifyListeners();
+      return;
+    }
     Directory appDocDir = await getApplicationDocumentsDirectory();
     Dio dio = Dio();
     try {
